@@ -6,20 +6,28 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: new AllEntries(),
+      home: new Home(),
     );
   }
 }
 
-class AllEntries extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  AllEntriesState createState() => AllEntriesState();
+  HomeState createState() => HomeState();
 }
 
-class AllEntriesState extends State<AllEntries> {
+class HomeState extends State<Home> {
   Color _indigo = Color.fromRGBO(98, 122, 239, 1);
   Color _indigo2 = Color.fromRGBO(149, 166, 244, 1);
   Color _indigo_shadow = Color.fromRGBO(206, 214, 244, 0.6);
+  Color _background = Color.fromRGBO(240, 243, 250, 1);
+  Color _grey = Colors.grey[300];
+
+  Color _normal_icon_1 = Color.fromRGBO(149, 166, 244, 1);
+  Color _normal_icon_2 = Colors.grey[300];
+  Color _normal_icon_3 = Colors.grey[300];
+  Color _normal_icon_4 = Colors.grey[300];
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -30,13 +38,17 @@ class AllEntriesState extends State<AllEntries> {
           ),
           elevation: 0.0,
           backgroundColor: Colors.white),
-      body: new Container(),
+      body: new Container(
+        decoration: BoxDecoration(
+          color: _background,
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // runApp(Entry());
-          debugPrint('pressed');
+          debugPrint('add entry button pressed');
         },
-        elevation: 3,
+        elevation: 10,
         child: Container(
           decoration: BoxDecoration(
               border: Border.all(width: 9.0, color: _indigo),
@@ -53,22 +65,34 @@ class AllEntriesState extends State<AllEntries> {
           child: Container(
               height: 50,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     IconButton(
-                      icon:
-                          Icon(Icons.home, size: 25.0, color: Colors.grey[300]),
+                      icon: Icon(Icons.home, size: 25.0, color: _normal_icon_1),
                       onPressed: () {
-                        debugPrint('home pressed');
+                        setState(() {
+                          if (_normal_icon_1 == _grey) {
+                            _normal_icon_2 = _grey;
+                            _normal_icon_3 = _grey;
+                            _normal_icon_4 = _grey;
+                            _normal_icon_1 = _indigo2;
+                          }
+                        });
                       },
                     ),
                     IconButton(
-                      icon:
-                          Icon(Icons.apps, size: 25.0, color: Colors.grey[300]),
+                      icon: Icon(Icons.apps, size: 25.0, color: _normal_icon_2),
                       onPressed: () {
-                        debugPrint('apps pressed');
+                        setState(() {
+                          if (_normal_icon_2 == _grey) {
+                            _normal_icon_1 = _grey;
+                            _normal_icon_3 = _grey;
+                            _normal_icon_4 = _grey;
+                            _normal_icon_2 = _indigo2;
+                          }
+                        });
                       },
                     ),
                     SizedBox.shrink(),
@@ -79,16 +103,30 @@ class AllEntriesState extends State<AllEntries> {
                     SizedBox.shrink(),
                     IconButton(
                       icon: Icon(Icons.satellite,
-                          size: 25.0, color: Colors.grey[300]),
+                          size: 25.0, color: _normal_icon_3),
                       onPressed: () {
-                        debugPrint('satellite pressed');
+                        setState(() {
+                          if (_normal_icon_3 == _grey) {
+                            _normal_icon_1 = _grey;
+                            _normal_icon_2 = _grey;
+                            _normal_icon_4 = _grey;
+                            _normal_icon_3 = _indigo2;
+                          }
+                        });
                       },
                     ),
                     IconButton(
-                      icon:
-                          Icon(Icons.home, size: 25.0, color: Colors.grey[300]),
+                      icon: Icon(Icons.settings,
+                          size: 25.0, color: _normal_icon_4),
                       onPressed: () {
-                        debugPrint('settings');
+                        setState(() {
+                          if (_normal_icon_4 == _grey) {
+                            _normal_icon_1 = _grey;
+                            _normal_icon_2 = _grey;
+                            _normal_icon_3 = _grey;
+                            _normal_icon_4 = _indigo2;
+                          }
+                        });
                       },
                     ),
                   ],
