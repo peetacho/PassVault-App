@@ -6,15 +6,14 @@ class Entry extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Location Detail'),
+        title: Text('Account'),
       ),
       body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextSection(Colors.red),
-            TextSection(Colors.green),
-            TextSection(Colors.blue),
+            TextSection('account1', 'user1', 'pass1'),
+            TextSection('account2', 'user2', 'pass2'),
           ]),
     );
   }

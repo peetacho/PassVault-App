@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TextSection extends StatelessWidget {
-  final Color _color;
+  final String accountTitle;
+  final String username;
+  final String password;
 
-  TextSection(this._color);
+  TextSection(this.accountTitle, this.username, this.password);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: _color,
-      ),
-      child: Text('hi'),
+      child: Text(accountTitle + username + password),
     );
   }
 }
