@@ -1,8 +1,12 @@
 // app.dart
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // COLORS //
 Color _indigo = Color.fromRGBO(98, 122, 239, 1);
@@ -27,7 +31,40 @@ class App extends StatelessWidget {
   }
 }
 
+class JSONStorage {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File("$path/jsonStorage.txt");
+  }
+
+  Future<String> readJSONStorage() async {
+    try {
+      final file = await _localFile;
+      String contents = await file.readAsString();
+      // debugPrint("reading readJSONStorage file stuff: " + contents);
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('jsonFileString', contents);
+      return contents;
+    } catch (err) {
+      return "";
+    }
+  }
+
+  Future<File> writeJSONStorage(String str) async {
+    final file = await _localFile;
+    readJSONStorage();
+    return file.writeAsString(str);
+  }
+}
+
 class Home extends StatefulWidget {
+  //instantiates jsonstorage class
+  final JSONStorage jsonStorage = JSONStorage();
   @override
   HomeState createState() => HomeState();
 }
@@ -47,8 +84,10 @@ class HomeState extends State<Home> {
 
   final PageStorageBucket bucket = PageStorageBucket();
 
+  String readToString;
   @override
   void initState() {
+    // sets keys for different pages
     _pageOne = PageOne(
       key: keyOne,
     );
@@ -61,10 +100,20 @@ class HomeState extends State<Home> {
     _pageFour = PageFour(
       key: keyFour,
     );
+    getJsonFileString();
 
     pages = [_pageOne, _pageTwo, _pageThree, _pageFour];
     currentPage = _pageOne;
+
+    // for storage
+
+    widget.jsonStorage.readJSONStorage().then((String result) => setState(() {
+          readToString = result;
+        }));
+
     super.initState();
+
+    // for refresh page
     refreshList();
   }
 
@@ -73,7 +122,7 @@ class HomeState extends State<Home> {
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);
     await Future.delayed(Duration(seconds: 1));
-
+    // getJsonFileString();
     setState(() {
       (context as Element).reassemble();
     });
@@ -300,16 +349,33 @@ class HomeState extends State<Home> {
       formKey.currentState.save();
 
       //append entry item into items list
-      items.add(EntryItem(_addedAccount, _addedEmail, _addedUsername,
-          _addedPassword, _addedDescription));
+      items.insert(
+          0,
+          EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
+              _addedDescription));
 
       //EntryItem objects converted to JSON string
       itemsToJSON = jsonEncode(items);
 
-      print(itemsToJSON);
+      widget.jsonStorage.writeJSONStorage(itemsToJSON);
+
       formKey.currentState.reset();
     }
   }
+}
+
+var jsonFileString;
+
+getJsonFileString() async {
+  final prefs = await SharedPreferences.getInstance();
+  jsonFileString = prefs.getString('jsonFileString');
+  // debugPrint(jsonFileString);
+  // JSON String converted to EntryItem objects
+  var decodedItemsToJSON = jsonDecode(jsonFileString) as List;
+  List<ListItem> newItems =
+      decodedItemsToJSON.map((tagJson) => EntryItem.fromJson(tagJson)).toList();
+
+  items = newItems;
 }
 
 List<ListItem> items = [];
@@ -391,10 +457,18 @@ class EntryItem implements ListItem {
     }
   }
 
+  String newPass() {
+    String newPass = '';
+    for (var i = 0; i < pass.length; i++) {
+      newPass += '*';
+    }
+    return newPass;
+  }
+
   Widget buildUser(BuildContext context) {
     return Container(
       child: Text(
-        userOrEmail() + "\n" + "Password: " + pass + "\n",
+        userOrEmail() + "\n" + "Password: " + newPass() + "\n",
         style: TextStyle(color: Colors.white),
       ),
     );
@@ -433,12 +507,21 @@ var entryColor3 = [
 /////////////////////////////////////PAGE ONE////////////////////////////////
 class PageOne extends StatefulWidget {
   PageOne({Key key}) : super(key: key);
+  final JSONStorage jsonStorage = JSONStorage();
 
   @override
   PageOneState createState() => PageOneState();
 }
 
 class PageOneState extends State<PageOne> {
+  String jsonStringString;
+  @override
+  void initState() {
+    getJsonFileString();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -446,6 +529,13 @@ class PageOneState extends State<PageOne> {
       itemCount: items.length,
       // Convert each item into a widget based on the type of item it is.
       itemBuilder: (context, index) {
+        // debugPrint("yeet " + jsonStringString);
+        // // JSON String converted to EntryItem objects
+        // var decodedItemsToJSON = jsonDecode(jsonStringString) as List;
+        // List<ListItem> newItems = decodedItemsToJSON
+        //     .map((tagJson) => EntryItem.fromJson(tagJson))
+        //     .toList();
+
         final item = items[index];
 
         int colorIndex = index % 4;
