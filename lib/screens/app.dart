@@ -1,6 +1,19 @@
 // app.dart
-import 'entry/entry_entry.dart';
 import 'package:flutter/material.dart';
+import 'package:gradient_widgets/gradient_widgets.dart';
+
+// COLORS //
+Color _indigo = Color.fromRGBO(98, 122, 239, 1);
+Color _indigo2 = Color.fromRGBO(149, 166, 244, 1);
+Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
+Color _background = Color.fromRGBO(240, 243, 250, 1);
+Color _grey = Colors.grey[300];
+
+// ICON COLORS //
+Color _normalIcon1 = Color.fromRGBO(149, 166, 244, 1);
+Color _normalIcon2 = Colors.grey[300];
+Color _normalIcon3 = Colors.grey[300];
+Color _normalIcon4 = Colors.grey[300];
 
 class App extends StatelessWidget {
   @override
@@ -50,19 +63,6 @@ class HomeState extends State<Home> {
     currentPage = _pageOne;
     super.initState();
   }
-
-  // COLORS //
-  Color _indigo = Color.fromRGBO(98, 122, 239, 1);
-  Color _indigo2 = Color.fromRGBO(149, 166, 244, 1);
-  Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
-  Color _background = Color.fromRGBO(240, 243, 250, 1);
-  Color _grey = Colors.grey[300];
-
-  // ICON COLORS //
-  Color _normalIcon1 = Color.fromRGBO(149, 166, 244, 1);
-  Color _normalIcon2 = Colors.grey[300];
-  Color _normalIcon3 = Colors.grey[300];
-  Color _normalIcon4 = Colors.grey[300];
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +181,60 @@ class HomeState extends State<Home> {
   }
 }
 
+List<ListItem> items = [
+  EntryItem('Account1', 'user1', 'pass1'),
+  EntryItem('Account2', 'user2', 'pass2'),
+  EntryItem('Account3', 'user3', 'pass3'),
+  EntryItem('Account4', 'user4', 'pass4'),
+  EntryItem('Account5', 'user5', 'pass5'),
+  EntryItem('Account6', 'user6', 'pass6'),
+  EntryItem('Account7', 'user7', 'pass7'),
+  EntryItem('Account8', 'user8', 'pass8'),
+  EntryItem('Account9', 'user9', 'pass9'),
+  EntryItem('Account10', 'user10', 'pass10'),
+];
+
+List<String> testItem = ['asdad', 'niwferce', 'wefwefe', 'asdasdwefwefe'];
+
+/// The base class for the different types of items the list can contain.
+abstract class ListItem {
+  Widget buildAccount(BuildContext context);
+
+  /// The title line to show in a list item.
+  Widget buildUser(BuildContext context);
+
+  /// The subtitle line, if any, to show in a list item.
+  Widget buildPass(BuildContext context);
+}
+
+/// A ListItem that contains data to display a message.
+class EntryItem implements ListItem {
+  final String account;
+  final String user;
+  final String pass;
+
+  EntryItem(this.account, this.user, this.pass);
+
+  Widget buildAccount(BuildContext context) {
+    return Text(
+      account,
+      style: TextStyle(
+          fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget buildUser(BuildContext context) {
+    return Container(
+      child: Text(
+        user + "\n" + pass + "\n",
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  Widget buildPass(BuildContext context) => Text(pass);
+}
+
 class PageOne extends StatefulWidget {
   PageOne({Key key}) : super(key: key);
 
@@ -188,22 +242,98 @@ class PageOne extends StatefulWidget {
   PageOneState createState() => PageOneState();
 }
 
+var entryColor = [];
+
+var entryColor0 = [
+  Color.fromRGBO(129, 158, 241, 1),
+  Color.fromRGBO(163, 185, 245, 1)
+];
+
+var entryColor1 = [
+  Color.fromRGBO(126, 129, 185, 1),
+  Color.fromRGBO(168, 171, 211, 1)
+];
+
+var entryColor2 = [
+  Color.fromRGBO(238, 140, 149, 1),
+  Color.fromRGBO(243, 179, 182, 1)
+];
+
+var entryColor3 = [
+  Color.fromRGBO(62, 65, 144, 1),
+  Color.fromRGBO(125, 126, 184, 1)
+];
+
 class PageOneState extends State<PageOne> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemExtent: 250.0,
-      itemBuilder: (context, index) => Container(
-        padding: EdgeInsets.all(8.0),
-        child: Material(
-          elevation: 4.0,
-          borderRadius: BorderRadius.circular(5.0),
-          color: index % 2 == 0 ? Colors.green : Colors.yellow,
-          child: Center(
-            child: Text(index.toString()),
-          ),
-        ),
-      ),
+      // Let the ListView know how many items it needs to build.
+      itemCount: items.length,
+      // Provide a builder function. This is where the magic happens.
+      // Convert each item into a widget based on the type of item it is.
+      itemBuilder: (context, index) {
+        final item = items[index];
+
+        int colorIndex = index % 4;
+
+        switch (colorIndex) {
+          case 0:
+            entryColor = entryColor0;
+            break;
+          case 1:
+            entryColor = entryColor1;
+            break;
+          case 2:
+            entryColor = entryColor2;
+            break;
+          case 3:
+            entryColor = entryColor3;
+            break;
+        }
+
+        return Container(
+            margin: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+            ),
+            height: 120.0,
+            child: Container(
+                padding: EdgeInsets.only(top: 3.0, bottom: 3.0),
+                child: GradientCard(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          ListTile(
+                            leading: Icon(
+                              Icons.grade,
+                              color: Colors.white,
+                              size: 45,
+                            ),
+                            title: item.buildAccount(context),
+                            subtitle: item.buildUser(context),
+                            trailing: IconButton(
+                                icon:
+                                    Icon(Icons.more_vert, color: Colors.white),
+                                onPressed: () {
+                                  debugPrint(
+                                      'more vert tapped account ${index + 1}');
+                                }),
+                            isThreeLine: true,
+                            onTap: () {
+                              debugPrint('card tapped account ${index + 1}');
+                            },
+                          ),
+                        ]),
+                    elevation: 4.0,
+                    gradient: new LinearGradient(
+                      colors: [entryColor[0], entryColor[1]],
+                      begin: FractionalOffset.topLeft,
+                      end: FractionalOffset.bottomRight,
+                      stops: [0.0, 0.5],
+                      tileMode: TileMode.clamp,
+                    ))));
+      },
     );
   }
 }
@@ -219,18 +349,11 @@ class PageTwoState extends State<PageTwo> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemExtent: 250.0,
-      itemBuilder: (context, index) => Container(
-        padding: EdgeInsets.all(8.0),
-        child: Material(
-          elevation: 4.0,
-          borderRadius: BorderRadius.circular(5.0),
-          color: index % 2 == 0 ? Colors.cyan : Colors.deepOrange,
-          child: Center(
-            child: Text(index.toString()),
-          ),
-        ),
-      ),
+      // Let the ListView know how many items it needs to build.
+      itemCount: items.length,
+      // Provide a builder function. This is where the magic happens.
+      // Convert each item into a widget based on the type of item it is.
+      itemBuilder: (context, index) {},
     );
   }
 }
@@ -246,19 +369,8 @@ class PageThreeState extends State<PageThree> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemExtent: 250.0,
-      itemBuilder: (context, index) => Container(
-        padding: EdgeInsets.all(8.0),
-        child: Material(
-          elevation: 4.0,
-          borderRadius: BorderRadius.circular(5.0),
-          color: index % 2 == 0 ? Colors.pink : Colors.white,
-          child: Center(
-            child: Text(index.toString()),
-          ),
-        ),
-      ),
-    );
+        itemCount: testItem.length,
+        itemBuilder: (BuildContext ctxt, int index) {});
   }
 }
 
@@ -273,18 +385,7 @@ class PageFourState extends State<PageFour> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemExtent: 250.0,
-      itemBuilder: (context, index) => Container(
-        padding: EdgeInsets.all(8.0),
-        child: Material(
-          elevation: 4.0,
-          borderRadius: BorderRadius.circular(5.0),
-          color: index % 2 == 0 ? Colors.yellow : Colors.purple,
-          child: Center(
-            child: Text(index.toString()),
-          ),
-        ),
-      ),
-    );
+        itemCount: testItem.length,
+        itemBuilder: (BuildContext ctxt, int index) {});
   }
 }
