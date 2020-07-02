@@ -236,15 +236,14 @@ class HomeState extends State<Home> {
                               TextFormField(
                                   decoration:
                                       InputDecoration(labelText: 'Email:'),
-                                  validator: (input) =>
-                                      input.length < 1 || !input.contains('@')
-                                          ? 'Please input a valid email'
-                                          : null,
+                                  validator: (input) => input.length < 0
+                                      ? 'Please input a valid email'
+                                      : null,
                                   onSaved: (input) => _addedEmail = input),
                               TextFormField(
                                   decoration:
                                       InputDecoration(labelText: 'Username:'),
-                                  validator: (input) => input.length < 1
+                                  validator: (input) => input.length < 0
                                       ? 'Please input an username'
                                       : null,
                                   onSaved: (input) => _addedUsername = input),
@@ -273,8 +272,6 @@ class HomeState extends State<Home> {
                                     child: RaisedButton(
                                       onPressed: () {
                                         _submit();
-                                        print('added entry');
-                                        Navigator.of(context).pop();
                                       },
                                       child: Text('Add Entry'),
                                     ),
@@ -292,23 +289,24 @@ class HomeState extends State<Home> {
 
   void _submit() {
     if (formKey.currentState.validate()) {
+      //save form inputs
       formKey.currentState.save();
+
+      //append entry item into items list
+      items.add(EntryItem(_addedAccount, _addedEmail, _addedUsername,
+          _addedPassword, _addedDescription));
+
+      //EntryItem objects converted to JSON string
+      itemsToJSON = jsonEncode(items);
+
+      print(itemsToJSON);
     }
   }
 }
 
-List<ListItem> items = [
-  EntryItem('Account1', 'user1', 'pass1'),
-  EntryItem('Account2', 'user2', 'pass2'),
-  EntryItem('Account3', 'user3', 'pass3'),
-  EntryItem('Account4', 'user4', 'pass4'),
-  EntryItem('Account5', 'user5', 'pass5'),
-  EntryItem('Account6', 'user6', 'pass6'),
-  EntryItem('Account7', 'user7', 'pass7'),
-  EntryItem('Account8', 'user8', 'pass8'),
-  EntryItem('Account9', 'user9', 'pass9'),
-  EntryItem('Account10', 'user10', 'pass10'),
-];
+List<ListItem> items = [];
+
+String itemsToJSON;
 
 // var jsonItems = [
 //   {"account": "Account1", "user": "user1", "pass": "pass1"},
@@ -341,20 +339,28 @@ abstract class ListItem {
 /// A ListItem that contains data to display a message.
 class EntryItem implements ListItem {
   final String account;
+  final String email;
   final String user;
   final String pass;
+  final String description;
 
-  EntryItem(this.account, this.user, this.pass);
+  EntryItem(this.account, this.email, this.user, this.pass, this.description);
 
   factory EntryItem.fromJson(dynamic json) {
-    return EntryItem(json['account'] as String, json['user'] as String,
-        json['pass'] as String);
+    return EntryItem(
+        json['account'] as String,
+        json['email'] as String,
+        json['user'] as String,
+        json['pass'] as String,
+        json['description'] as String);
   }
 
   Map toJson() => {
         'account': account,
+        'email': email,
         'user': user,
         'pass': pass,
+        'description': description,
       };
 
   Widget buildAccount(BuildContext context) {
@@ -365,10 +371,18 @@ class EntryItem implements ListItem {
     );
   }
 
+  String userOrEmail() {
+    if (user == '' || user == null) {
+      return 'Email: ' + email;
+    } else {
+      return 'Username: ' + user;
+    }
+  }
+
   Widget buildUser(BuildContext context) {
     return Container(
       child: Text(
-        "Username: " + user + "\n" + "Password: " + pass + "\n",
+        userOrEmail() + "\n" + "Password: " + pass + "\n",
         style: TextStyle(color: Colors.white),
       ),
     );
@@ -378,7 +392,7 @@ class EntryItem implements ListItem {
 
   @override
   String toString() {
-    return '{ ${this.account}, ${this.user}, ${this.pass} }';
+    return '{ ${this.account}, ${this.email}, ${this.user}, ${this.pass},${this.description} }';
   }
 }
 
