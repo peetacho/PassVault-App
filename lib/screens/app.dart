@@ -13,6 +13,7 @@ Color _indigo = Color.fromRGBO(98, 122, 239, 1);
 Color _indigo2 = Color.fromRGBO(149, 166, 244, 1);
 Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
 Color _background = Color.fromRGBO(240, 243, 250, 1);
+Color _searchBarColor = Color.fromRGBO(300, 243, 250, 1);
 Color _grey = Colors.grey[300];
 
 // ICON COLORS //
@@ -145,9 +146,7 @@ class HomeState extends State<Home> {
               backgroundColor: Colors.white),
           preferredSize: Size.fromHeight(60.0)),
       body: RefreshIndicator(
-        // decoration: BoxDecoration(
-        //   color: _background,
-        // ),
+        backgroundColor: _background,
         color: _indigo,
         child: PageStorage(child: currentPage, bucket: bucket),
         onRefresh: refreshList,
@@ -376,9 +375,11 @@ getJsonFileString() async {
       decodedItemsToJSON.map((tagJson) => EntryItem.fromJson(tagJson)).toList();
 
   items = newItems;
+  itemsDisplay = newItems;
 }
 
 List<ListItem> items = [];
+List<ListItem> itemsDisplay = [];
 
 String itemsToJSON;
 
@@ -526,79 +527,112 @@ class PageOneState extends State<PageOne> {
   Widget build(BuildContext context) {
     return ListView.builder(
       // Let the ListView know how many items it needs to build.
-      itemCount: items.length,
+      itemCount: itemsDisplay.length + 1,
       // Convert each item into a widget based on the type of item it is.
       itemBuilder: (context, index) {
-        // debugPrint("yeet " + jsonStringString);
-        // // JSON String converted to EntryItem objects
-        // var decodedItemsToJSON = jsonDecode(jsonStringString) as List;
-        // List<ListItem> newItems = decodedItemsToJSON
-        //     .map((tagJson) => EntryItem.fromJson(tagJson))
-        //     .toList();
-
-        final item = items[index];
-
-        int colorIndex = index % 4;
-
-        switch (colorIndex) {
-          case 0:
-            entryColor = entryColor0;
-            break;
-          case 1:
-            entryColor = entryColor1;
-            break;
-          case 2:
-            entryColor = entryColor2;
-            break;
-          case 3:
-            entryColor = entryColor3;
-            break;
-        }
-
-        return Container(
-            margin: const EdgeInsets.only(
-              left: 8.0,
-              right: 8.0,
-            ),
-            height: 120.0,
-            child: Container(
-                padding: EdgeInsets.only(top: 3.0, bottom: 3.0),
-                child: GradientCard(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(
-                              Icons.star_half,
-                              color: Colors.white,
-                              size: 45,
-                            ),
-                            title: item.buildAccount(context),
-                            subtitle: item.buildUser(context),
-                            trailing: IconButton(
-                                icon:
-                                    Icon(Icons.more_vert, color: Colors.white),
-                                onPressed: () {
-                                  debugPrint('more vert card ${index + 1}');
-                                }),
-                            isThreeLine: true,
-                            onTap: () {
-                              debugPrint('card ${index + 1}');
-                              print(item);
-                            },
-                          ),
-                        ]),
-                    elevation: 4.0,
-                    gradient: new LinearGradient(
-                      colors: [entryColor[0], entryColor[1]],
-                      begin: FractionalOffset.topLeft,
-                      end: FractionalOffset.bottomRight,
-                      stops: [0.0, 1],
-                      tileMode: TileMode.clamp,
-                    ))));
+        return index == 0 ? _searchBar(context) : _listItem(context, index - 1);
       },
     );
   }
+
+  _searchBar(context) {
+    return Container(
+        margin: const EdgeInsets.only(
+            left: 8.0, right: 8.0, top: 12.0, bottom: 12.0),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+          child: Theme(
+            data: Theme.of(context).copyWith(splashColor: _searchBarColor),
+            child: TextField(
+              decoration: InputDecoration(
+                  filled: true,
+                  hintText: 'Search',
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: _grey,
+                  ),
+                  fillColor: _searchBarColor,
+                  focusColor: _searchBarColor,
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: _searchBarColor),
+                      borderRadius: BorderRadius.circular(8.0)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: _searchBarColor),
+                      borderRadius: BorderRadius.circular(8.0))),
+              onChanged: (text) {
+                text = text.toLowerCase();
+                setState(() {
+                  itemsDisplay = items.where((item) {
+                    var itemTitle =
+                        item.buildAccount(context).toString().toLowerCase();
+
+                    return itemTitle.contains(text);
+                  }).toList();
+                });
+              },
+            ),
+          ),
+        ));
+  }
+}
+
+_listItem(context, index) {
+  final item = itemsDisplay[index];
+
+  int colorIndex = index % 4;
+
+  switch (colorIndex) {
+    case 0:
+      entryColor = entryColor0;
+      break;
+    case 1:
+      entryColor = entryColor1;
+      break;
+    case 2:
+      entryColor = entryColor2;
+      break;
+    case 3:
+      entryColor = entryColor3;
+      break;
+  }
+
+  return Container(
+      margin: const EdgeInsets.only(
+        left: 8.0,
+        right: 8.0,
+      ),
+      height: 120.0,
+      child: Container(
+          padding: EdgeInsets.only(top: 3.0, bottom: 3.0),
+          child: GradientCard(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(
+                        Icons.star_half,
+                        color: Colors.white,
+                        size: 45,
+                      ),
+                      title: item.buildAccount(context),
+                      subtitle: item.buildUser(context),
+                      trailing: IconButton(
+                          icon: Icon(Icons.more_vert, color: Colors.white),
+                          onPressed: () {}),
+                      isThreeLine: true,
+                      onTap: () {
+                        print(item);
+                      },
+                    ),
+                  ]),
+              elevation: 4.0,
+              gradient: new LinearGradient(
+                colors: [entryColor[0], entryColor[1]],
+                begin: FractionalOffset.topLeft,
+                end: FractionalOffset.bottomRight,
+                stops: [0.0, 1],
+                tileMode: TileMode.clamp,
+              ))));
 }
 
 /////////////////////////////////////PAGE TWO////////////////////////////////
