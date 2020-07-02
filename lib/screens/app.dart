@@ -1,4 +1,5 @@
 // app.dart
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
@@ -20,6 +21,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: new Home(),
     );
   }
@@ -63,6 +65,20 @@ class HomeState extends State<Home> {
     pages = [_pageOne, _pageTwo, _pageThree, _pageFour];
     currentPage = _pageOne;
     super.initState();
+    refreshList();
+  }
+
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
+
+  Future<Null> refreshList() async {
+    refreshKey.currentState?.show(atTop: false);
+    await Future.delayed(Duration(seconds: 1));
+
+    setState(() {
+      (context as Element).reassemble();
+    });
+
+    return null;
   }
 
   @override
@@ -79,26 +95,17 @@ class HomeState extends State<Home> {
               brightness: Brightness.light,
               backgroundColor: Colors.white),
           preferredSize: Size.fromHeight(60.0)),
-      body: new Container(
-        decoration: BoxDecoration(
-          color: _background,
-        ),
+      body: RefreshIndicator(
+        // decoration: BoxDecoration(
+        //   color: _background,
+        // ),
+        color: _indigo,
         child: PageStorage(child: currentPage, bucket: bucket),
+        onRefresh: refreshList,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _tripEditModalBottomSheet(context);
-          debugPrint('add entry button pressed');
-
-          // // EntryItem objects converted to JSON string
-          // String itemsToJSON = jsonEncode(items);
-
-          // // JSON String converted to EntryItem objects
-          // var decodedItemsToJSON = jsonDecode(itemsToJSON) as List;
-          // List<ListItem> newItems = decodedItemsToJSON
-          //     .map((tagJson) => EntryItem.fromJson(tagJson))
-          //     .toList();
-          // print(newItems);
         },
         elevation: 5,
         child: Container(
@@ -300,6 +307,7 @@ class HomeState extends State<Home> {
       itemsToJSON = jsonEncode(items);
 
       print(itemsToJSON);
+      formKey.currentState.reset();
     }
   }
 }
@@ -372,10 +380,14 @@ class EntryItem implements ListItem {
   }
 
   String userOrEmail() {
-    if (user == '' || user == null) {
-      return 'Email: ' + email;
+    if (user == '' && email == '') {
+      return 'N/A';
     } else {
-      return 'Username: ' + user;
+      if (user == '' || user == null) {
+        return 'Email: ' + email;
+      } else {
+        return 'Username: ' + user;
+      }
     }
   }
 
@@ -392,7 +404,7 @@ class EntryItem implements ListItem {
 
   @override
   String toString() {
-    return '{ ${this.account}, ${this.email}, ${this.user}, ${this.pass},${this.description} }';
+    return '{${this.account}, ${this.email}, ${this.user}, ${this.pass}, ${this.description}}';
   }
 }
 
@@ -432,7 +444,6 @@ class PageOneState extends State<PageOne> {
     return ListView.builder(
       // Let the ListView know how many items it needs to build.
       itemCount: items.length,
-      // Provide a builder function. This is where the magic happens.
       // Convert each item into a widget based on the type of item it is.
       itemBuilder: (context, index) {
         final item = items[index];
@@ -478,12 +489,12 @@ class PageOneState extends State<PageOne> {
                                 icon:
                                     Icon(Icons.more_vert, color: Colors.white),
                                 onPressed: () {
-                                  debugPrint(
-                                      'more vert tapped account ${index + 1}');
+                                  debugPrint('more vert card ${index + 1}');
                                 }),
                             isThreeLine: true,
                             onTap: () {
-                              debugPrint('card tapped account ${index + 1}');
+                              debugPrint('card ${index + 1}');
+                              print(item);
                             },
                           ),
                         ]),
@@ -492,7 +503,7 @@ class PageOneState extends State<PageOne> {
                       colors: [entryColor[0], entryColor[1]],
                       begin: FractionalOffset.topLeft,
                       end: FractionalOffset.bottomRight,
-                      stops: [0.0, 0.5],
+                      stops: [0.0, 1],
                       tileMode: TileMode.clamp,
                     ))));
       },
@@ -513,11 +524,10 @@ class PageTwoState extends State<PageTwo> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      // Let the ListView know how many items it needs to build.
       itemCount: items.length,
-      // Provide a builder function. This is where the magic happens.
-      // Convert each item into a widget based on the type of item it is.
-      itemBuilder: (context, index) {},
+      itemBuilder: (context, index) {
+        Text('nice');
+      },
     );
   }
 }
@@ -536,7 +546,9 @@ class PageThreeState extends State<PageThree> {
   Widget build(BuildContext context) {
     return ListView.builder(
         itemCount: testItem.length,
-        itemBuilder: (BuildContext ctxt, int index) {});
+        itemBuilder: (BuildContext ctxt, int index) {
+          Text('nice');
+        });
   }
 }
 
@@ -554,6 +566,8 @@ class PageFourState extends State<PageFour> {
   Widget build(BuildContext context) {
     return ListView.builder(
         itemCount: testItem.length,
-        itemBuilder: (BuildContext ctxt, int index) {});
+        itemBuilder: (BuildContext ctxt, int index) {
+          Text('nice');
+        });
   }
 }

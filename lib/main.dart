@@ -12,6 +12,7 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   runApp(new MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: new MyTextInput(),
   ));
 }
