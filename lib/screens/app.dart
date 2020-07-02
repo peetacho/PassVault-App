@@ -1,4 +1,5 @@
 // app.dart
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 
@@ -86,8 +87,18 @@ class HomeState extends State<Home> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // runApp(Entry());
+          _tripEditModalBottomSheet(context);
           debugPrint('add entry button pressed');
+
+          // // EntryItem objects converted to JSON string
+          // String itemsToJSON = jsonEncode(items);
+
+          // // JSON String converted to EntryItem objects
+          // var decodedItemsToJSON = jsonDecode(itemsToJSON) as List;
+          // List<ListItem> newItems = decodedItemsToJSON
+          //     .map((tagJson) => EntryItem.fromJson(tagJson))
+          //     .toList();
+          // print(newItems);
         },
         elevation: 5,
         child: Container(
@@ -179,6 +190,111 @@ class HomeState extends State<Home> {
               ))),
     );
   }
+
+  ////////////////////////////// Entry Page ///////////////////////////
+
+  final formKey = GlobalKey<FormState>();
+  String _addedAccount,
+      _addedEmail,
+      _addedUsername,
+      _addedPassword,
+      _addedDescription;
+
+  void _tripEditModalBottomSheet(context) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Text("Text"),
+                        Spacer(),
+                        IconButton(
+                            icon: Icon(Icons.close, size: 25),
+                            onPressed: () => Navigator.of(context).pop()),
+                      ],
+                    ),
+                    Container(
+                      child: Form(
+                          key: formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextFormField(
+                                  decoration:
+                                      InputDecoration(labelText: 'Account:'),
+                                  validator: (input) => input.length < 1
+                                      ? 'Please input an account'
+                                      : null,
+                                  onSaved: (input) => _addedAccount = input),
+                              TextFormField(
+                                  decoration:
+                                      InputDecoration(labelText: 'Email:'),
+                                  validator: (input) =>
+                                      input.length < 1 || !input.contains('@')
+                                          ? 'Please input a valid email'
+                                          : null,
+                                  onSaved: (input) => _addedEmail = input),
+                              TextFormField(
+                                  decoration:
+                                      InputDecoration(labelText: 'Username:'),
+                                  validator: (input) => input.length < 1
+                                      ? 'Please input an username'
+                                      : null,
+                                  onSaved: (input) => _addedUsername = input),
+                              TextFormField(
+                                decoration:
+                                    InputDecoration(labelText: 'Password:'),
+                                validator: (input) => input.length < 1
+                                    ? 'Please input a password'
+                                    : null,
+                                onSaved: (input) => _addedPassword = input,
+                                obscureText: true,
+                              ),
+                              TextFormField(
+                                  decoration: InputDecoration(
+                                      labelText: 'Description:'),
+                                  validator: (input) => input.length < 0
+                                      ? 'Please input an description'
+                                      : null,
+                                  onSaved: (input) =>
+                                      _addedDescription = input),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: RaisedButton(
+                                      onPressed: () {
+                                        _submit();
+                                        print('added entry');
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Add Entry'),
+                                    ),
+                                  )
+                                ],
+                              )
+                            ],
+                          )),
+                    ),
+                  ],
+                )),
+          );
+        });
+  }
+
+  void _submit() {
+    if (formKey.currentState.validate()) {
+      formKey.currentState.save();
+    }
+  }
 }
 
 List<ListItem> items = [
@@ -193,6 +309,21 @@ List<ListItem> items = [
   EntryItem('Account9', 'user9', 'pass9'),
   EntryItem('Account10', 'user10', 'pass10'),
 ];
+
+// var jsonItems = [
+//   {"account": "Account1", "user": "user1", "pass": "pass1"},
+//   {"account": "Account2", "user": "user2", "pass": "pass2"},
+//   {"account": "Account3", "user": "user3", "pass": "pass3"},
+//   {"account": "Account4", "user": "user4", "pass": "pass4"},
+//   {"account": "Account5", "user": "user5", "pass": "pass5"},
+//   {"account": "Account6", "user": "user6", "pass": "pass6"},
+//   {"account": "Account7", "user": "user7", "pass": "pass7"},
+//   {"account": "Account8", "user": "user8", "pass": "pass8"},
+//   {"account": "Account9", "user": "user9", "pass": "pass9"},
+//   {"account": "Account10", "user": "user10", "pass": "pass10"}
+// ];
+
+// List<ListItem> jSONToItems;
 
 List<String> testItem = ['asdad', 'niwferce', 'wefwefe', 'asdasdwefwefe'];
 
@@ -215,6 +346,17 @@ class EntryItem implements ListItem {
 
   EntryItem(this.account, this.user, this.pass);
 
+  factory EntryItem.fromJson(dynamic json) {
+    return EntryItem(json['account'] as String, json['user'] as String,
+        json['pass'] as String);
+  }
+
+  Map toJson() => {
+        'account': account,
+        'user': user,
+        'pass': pass,
+      };
+
   Widget buildAccount(BuildContext context) {
     return Text(
       account,
@@ -226,20 +368,18 @@ class EntryItem implements ListItem {
   Widget buildUser(BuildContext context) {
     return Container(
       child: Text(
-        user + "\n" + pass + "\n",
+        "Username: " + user + "\n" + "Password: " + pass + "\n",
         style: TextStyle(color: Colors.white),
       ),
     );
   }
 
   Widget buildPass(BuildContext context) => Text(pass);
-}
-
-class PageOne extends StatefulWidget {
-  PageOne({Key key}) : super(key: key);
 
   @override
-  PageOneState createState() => PageOneState();
+  String toString() {
+    return '{ ${this.account}, ${this.user}, ${this.pass} }';
+  }
 }
 
 var entryColor = [];
@@ -263,6 +403,14 @@ var entryColor3 = [
   Color.fromRGBO(62, 65, 144, 1),
   Color.fromRGBO(125, 126, 184, 1)
 ];
+
+/////////////////////////////////////PAGE ONE////////////////////////////////
+class PageOne extends StatefulWidget {
+  PageOne({Key key}) : super(key: key);
+
+  @override
+  PageOneState createState() => PageOneState();
+}
 
 class PageOneState extends State<PageOne> {
   @override
@@ -306,7 +454,7 @@ class PageOneState extends State<PageOne> {
                         children: <Widget>[
                           ListTile(
                             leading: Icon(
-                              Icons.grade,
+                              Icons.star_half,
                               color: Colors.white,
                               size: 45,
                             ),
@@ -338,6 +486,8 @@ class PageOneState extends State<PageOne> {
   }
 }
 
+/////////////////////////////////////PAGE TWO////////////////////////////////
+
 class PageTwo extends StatefulWidget {
   PageTwo({Key key}) : super(key: key);
 
@@ -358,6 +508,8 @@ class PageTwoState extends State<PageTwo> {
   }
 }
 
+/////////////////////////////////////PAGE THREE////////////////////////////////
+
 class PageThree extends StatefulWidget {
   PageThree({Key key}) : super(key: key);
 
@@ -373,6 +525,8 @@ class PageThreeState extends State<PageThree> {
         itemBuilder: (BuildContext ctxt, int index) {});
   }
 }
+
+/////////////////////////////////////PAGE FOUR////////////////////////////////
 
 class PageFour extends StatefulWidget {
   PageFour({Key key}) : super(key: key);
