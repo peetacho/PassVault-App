@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'entry/pageOne.dart';
 
 // COLORS //
 Color _indigo = Color.fromRGBO(98, 122, 239, 1);
 Color _indigo2 = Color.fromRGBO(149, 166, 244, 1);
 Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
 Color _background = Color.fromRGBO(240, 243, 250, 1);
-Color _searchBarColor = Color.fromRGBO(300, 243, 250, 1);
+Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
 Color _grey = Colors.grey[300];
 
 // ICON COLORS //
@@ -70,6 +71,8 @@ class Home extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
+final PageStorageBucket bucket = PageStorageBucket();
+
 class HomeState extends State<Home> {
   final Key keyOne = PageStorageKey('pageOne');
   final Key keyTwo = PageStorageKey('pageTwo');
@@ -82,8 +85,6 @@ class HomeState extends State<Home> {
   PageFour _pageFour;
   List<Widget> pages;
   Widget currentPage;
-
-  final PageStorageBucket bucket = PageStorageBucket();
 
   String readToString;
   @override
@@ -103,10 +104,9 @@ class HomeState extends State<Home> {
     );
     getJsonFileString();
 
+    // for storage
     pages = [_pageOne, _pageTwo, _pageThree, _pageFour];
     currentPage = _pageOne;
-
-    // for storage
 
     widget.jsonStorage.readJSONStorage().then((String result) => setState(() {
           readToString = result;
@@ -257,6 +257,10 @@ class HomeState extends State<Home> {
 
   void _tripEditModalBottomSheet(context) {
     showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        backgroundColor: Colors.white,
         isScrollControlled: true,
         context: context,
         builder: (BuildContext bc) {
@@ -383,23 +387,6 @@ List<ListItem> itemsDisplay = [];
 
 String itemsToJSON;
 
-// var jsonItems = [
-//   {"account": "Account1", "user": "user1", "pass": "pass1"},
-//   {"account": "Account2", "user": "user2", "pass": "pass2"},
-//   {"account": "Account3", "user": "user3", "pass": "pass3"},
-//   {"account": "Account4", "user": "user4", "pass": "pass4"},
-//   {"account": "Account5", "user": "user5", "pass": "pass5"},
-//   {"account": "Account6", "user": "user6", "pass": "pass6"},
-//   {"account": "Account7", "user": "user7", "pass": "pass7"},
-//   {"account": "Account8", "user": "user8", "pass": "pass8"},
-//   {"account": "Account9", "user": "user9", "pass": "pass9"},
-//   {"account": "Account10", "user": "user10", "pass": "pass10"}
-// ];
-
-// List<ListItem> jSONToItems;
-
-List<String> testItem = ['asdad', 'niwferce', 'wefwefe', 'asdasdwefwefe'];
-
 /// The base class for the different types of items the list can contain.
 abstract class ListItem {
   Widget buildAccount(BuildContext context);
@@ -505,136 +492,6 @@ var entryColor3 = [
   Color.fromRGBO(125, 126, 184, 1)
 ];
 
-/////////////////////////////////////PAGE ONE////////////////////////////////
-class PageOne extends StatefulWidget {
-  PageOne({Key key}) : super(key: key);
-  final JSONStorage jsonStorage = JSONStorage();
-
-  @override
-  PageOneState createState() => PageOneState();
-}
-
-class PageOneState extends State<PageOne> {
-  String jsonStringString;
-  @override
-  void initState() {
-    getJsonFileString();
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      // Let the ListView know how many items it needs to build.
-      itemCount: itemsDisplay.length + 1,
-      // Convert each item into a widget based on the type of item it is.
-      itemBuilder: (context, index) {
-        return index == 0 ? _searchBar(context) : _listItem(context, index - 1);
-      },
-    );
-  }
-
-  _searchBar(context) {
-    return Container(
-        margin: const EdgeInsets.only(
-            left: 8.0, right: 8.0, top: 12.0, bottom: 12.0),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 4.0, right: 4.0),
-          child: Theme(
-            data: Theme.of(context).copyWith(splashColor: _searchBarColor),
-            child: TextField(
-              decoration: InputDecoration(
-                  filled: true,
-                  hintText: 'Search',
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: _grey,
-                  ),
-                  fillColor: _searchBarColor,
-                  focusColor: _searchBarColor,
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: _searchBarColor),
-                      borderRadius: BorderRadius.circular(8.0)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: _searchBarColor),
-                      borderRadius: BorderRadius.circular(8.0))),
-              onChanged: (text) {
-                text = text.toLowerCase();
-                setState(() {
-                  itemsDisplay = items.where((item) {
-                    var itemTitle =
-                        item.buildAccount(context).toString().toLowerCase();
-
-                    return itemTitle.contains(text);
-                  }).toList();
-                });
-              },
-            ),
-          ),
-        ));
-  }
-}
-
-_listItem(context, index) {
-  final item = itemsDisplay[index];
-
-  int colorIndex = index % 4;
-
-  switch (colorIndex) {
-    case 0:
-      entryColor = entryColor0;
-      break;
-    case 1:
-      entryColor = entryColor1;
-      break;
-    case 2:
-      entryColor = entryColor2;
-      break;
-    case 3:
-      entryColor = entryColor3;
-      break;
-  }
-
-  return Container(
-      margin: const EdgeInsets.only(
-        left: 8.0,
-        right: 8.0,
-      ),
-      height: 120.0,
-      child: Container(
-          padding: EdgeInsets.only(top: 3.0, bottom: 3.0),
-          child: GradientCard(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(
-                        Icons.star_half,
-                        color: Colors.white,
-                        size: 45,
-                      ),
-                      title: item.buildAccount(context),
-                      subtitle: item.buildUser(context),
-                      trailing: IconButton(
-                          icon: Icon(Icons.more_vert, color: Colors.white),
-                          onPressed: () {}),
-                      isThreeLine: true,
-                      onTap: () {
-                        print(item);
-                      },
-                    ),
-                  ]),
-              elevation: 4.0,
-              gradient: new LinearGradient(
-                colors: [entryColor[0], entryColor[1]],
-                begin: FractionalOffset.topLeft,
-                end: FractionalOffset.bottomRight,
-                stops: [0.0, 1],
-                tileMode: TileMode.clamp,
-              ))));
-}
-
 /////////////////////////////////////PAGE TWO////////////////////////////////
 
 class PageTwo extends StatefulWidget {
@@ -648,9 +505,9 @@ class PageTwoState extends State<PageTwo> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: 7,
       itemBuilder: (context, index) {
-        Text('nice');
+        return Text('nice');
       },
     );
   }
@@ -669,9 +526,9 @@ class PageThreeState extends State<PageThree> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: testItem.length,
+        itemCount: 7,
         itemBuilder: (BuildContext ctxt, int index) {
-          Text('nice');
+          return Text('nice');
         });
   }
 }
@@ -689,9 +546,9 @@ class PageFourState extends State<PageFour> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: testItem.length,
+        itemCount: 7,
         itemBuilder: (BuildContext ctxt, int index) {
-          Text('nice');
+          return Text('nice');
         });
   }
 }
