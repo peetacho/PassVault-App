@@ -121,16 +121,11 @@ class PageOneState extends State<PageOne> {
                             onPressed: () {}),
                         isThreeLine: true,
                         onTap: () {
-                          print(item);
+                          // print(item);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => EntryPage()));
-
-                          // runApp(new MaterialApp(
-                          //   debugShowCheckedModeBanner: false,
-                          //   home: new EntryPage(),
-                          // ));
+                                  builder: (context) => EntryPage(item)));
                         },
                       ),
                     ]),
