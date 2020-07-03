@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'pageOne.dart';
 import '../app.dart';
 
-Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
-
 class EntryPage extends StatefulWidget {
   final item;
   final JSONStorage jsonStorage = JSONStorage();
@@ -19,6 +17,9 @@ class EntryPage extends StatefulWidget {
 class EntryPageState extends State<EntryPage> {
   final item;
 
+  Color _searchBarColor2 = Color.fromRGBO(229, 233, 244, 1);
+  Color _searchBarColor = Colors.white;
+  Color _background = Color.fromRGBO(240, 243, 250, 1);
   EntryPageState(this.item);
 
   final formKey = GlobalKey<FormState>();
@@ -44,28 +45,65 @@ class EntryPageState extends State<EntryPage> {
                 onPressed: () {
                   Navigator.pop(context);
                 }),
-            actions: <Widget>[editSubmit(item.account)],
+            actions: <Widget>[editSubmit(item.index)],
             elevation: 0.0,
             backgroundColor: Colors.white),
         body: ListView.builder(
             itemCount: 1,
+            padding: EdgeInsets.all(0.0),
             itemBuilder: (context, index) {
-              return Form(
-                  key: formKey,
-                  child: Column(
-                    children: <Widget>[
-                      entryAccItem('Account', item.account),
-                      entryUserItem('Username', item.user),
-                      entryEmailItem('Email', item.email),
-                      entryPassItem('Password', item.pass),
-                      entryDescriptionItem('Description', item.description),
-                    ],
-                  ));
+              return Container(
+                  height: MediaQuery.of(context).size.height * 1,
+                  child: Form(
+                      key: formKey,
+                      child: Container(
+                          color: _background,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              entryAccItem('Account', item.account),
+                              entryUserItem('Username', item.user),
+                              entryEmailItem('Email', item.email),
+                              entryPassItem('Password', item.pass),
+                              entryDescriptionItem(
+                                  'Description', item.description),
+                              deleteButton(item.index)
+                            ],
+                          ))));
             }));
   }
 
+  deleteButton(acc) {
+    return Container(
+        margin: EdgeInsets.only(top: 15.0, bottom: 8.0),
+        child: SizedBox(
+          height: 55,
+          width: MediaQuery.of(context).size.width * 0.85,
+          child: FlatButton(
+              color: entryColor2[0],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Center(
+                child: Text(
+                  'Delete Entry',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              onPressed: () {
+                _entryDelete(acc);
+              }),
+        ));
+  }
+
+  var _isFilled = true;
+
   editSubmit(acc) {
     if (_isEdit) {
+      setState(() {
+        (context as Element).reassemble();
+      });
       return FlatButton(
         child: Text(
           'Edit',
@@ -83,7 +121,7 @@ class EntryPageState extends State<EntryPage> {
       return FlatButton(
         child: Text(
           'Submit',
-          style: TextStyle(fontSize: 20.0),
+          style: TextStyle(fontSize: 20.0, color: entryColor0[0]),
         ),
         disabledTextColor: Colors.indigo,
         textColor: Colors.blue[200],
@@ -97,24 +135,40 @@ class EntryPageState extends State<EntryPage> {
     }
   }
 
+  _entryDelete(acc) {
+    // int currentEntryIndex = items.indexWhere((element) => element
+    //     .buildAccount(context)
+    //     .toString()
+    //     .toLowerCase()
+    //     .contains(acc.toString().toLowerCase()));
+    // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
+
+    int currentEntryIndex = items.indexWhere((element) =>
+        element.buildIndex(context).toString().contains(acc.toString()));
+
+    // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
+
+    // debugPrint('items BEFORE delete: ' + items.toList().toString());
+
+    items.removeAt(currentEntryIndex);
+    itemsToJSON = jsonEncode(items);
+    // debugPrint('items AFTER delete: ' + itemsToJSON);
+
+    debugPrint('entry deleted');
+
+    widget.jsonStorage.writeJSONStorage(itemsToJSON);
+  }
+
   _entrySubmit(acc) {
     if (formKey.currentState.validate()) {
       //save form inputs
       formKey.currentState.save();
-      print(acc);
-      debugPrint("new Entry added: " +
-          EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
-                  _addedDescription)
-              .toString());
+      // print(acc);
+      debugPrint('entry submitted');
 
-      debugPrint('items list: ' + items.toList().toString());
-
-      int currentEntryIndex = items.indexWhere((element) => element
-          .buildAccount(context)
-          .toString()
-          .toLowerCase()
-          .contains(acc.toString().toLowerCase()));
-      debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
+      int currentEntryIndex = items.indexWhere((element) =>
+          element.buildIndex(context).toString().contains(acc.toString()));
+      // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
 
       items.removeAt(currentEntryIndex);
 
@@ -122,11 +176,11 @@ class EntryPageState extends State<EntryPage> {
       items.insert(
           currentEntryIndex,
           EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
-              _addedDescription));
+              _addedDescription, acc));
 
       //EntryItem objects converted to JSON string
       itemsToJSON = jsonEncode(items);
-      print(itemsToJSON);
+      //print(itemsToJSON);
 
       widget.jsonStorage.writeJSONStorage(itemsToJSON);
 
@@ -136,7 +190,8 @@ class EntryPageState extends State<EntryPage> {
 
   entryAccItem(label, item) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -156,7 +211,7 @@ class EntryPageState extends State<EntryPage> {
                 : new TextEditingController(text: item),
             readOnly: _isEdit,
             decoration: InputDecoration(
-                filled: true,
+                filled: _isFilled,
                 hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
@@ -194,7 +249,8 @@ class EntryPageState extends State<EntryPage> {
 
   entryUserItem(label, item) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -214,7 +270,7 @@ class EntryPageState extends State<EntryPage> {
                 : new TextEditingController(text: item),
             readOnly: _isEdit,
             decoration: InputDecoration(
-                filled: true,
+                filled: _isFilled,
                 hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
@@ -252,7 +308,8 @@ class EntryPageState extends State<EntryPage> {
 
   entryEmailItem(label, item) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -272,7 +329,7 @@ class EntryPageState extends State<EntryPage> {
                 : new TextEditingController(text: item),
             readOnly: _isEdit,
             decoration: InputDecoration(
-                filled: true,
+                filled: _isFilled,
                 hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
@@ -336,7 +393,8 @@ class EntryPageState extends State<EntryPage> {
 
   entryPassItem(label, item) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -357,7 +415,7 @@ class EntryPageState extends State<EntryPage> {
             readOnly: _isEdit,
             obscureText: _isHidden,
             decoration: InputDecoration(
-                filled: true,
+                filled: _isFilled,
                 hintText: item,
                 suffixIcon: Row(
                   mainAxisAlignment:
@@ -440,7 +498,8 @@ class EntryPageState extends State<EntryPage> {
 
   entryDescriptionItem(label, item) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -462,7 +521,7 @@ class EntryPageState extends State<EntryPage> {
                 : new TextEditingController(text: item),
             decoration: InputDecoration(
                 // contentPadding: const EdgeInsets.symmetric(vertical: 60.0),
-                filled: true,
+                filled: _isFilled,
                 hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(

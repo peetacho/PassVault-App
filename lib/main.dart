@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'screens/app.dart';
 
 // void main() => runApp(App());
-
+Color _background = Color.fromRGBO(240, 243, 250, 1);
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.black, //top bar color
@@ -12,6 +12,10 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   runApp(new MaterialApp(
+    theme: ThemeData(
+      backgroundColor: _background,
+      scaffoldBackgroundColor: _background,
+    ),
     debugShowCheckedModeBanner: false,
     home: new MyTextInput(),
   ));

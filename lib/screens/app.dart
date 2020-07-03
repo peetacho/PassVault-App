@@ -329,7 +329,8 @@ class HomeState extends State<Home> {
             ),
           ),
           TextFormField(
-            validator: (input) => input.length < 1 ? 'Account missing' : null,
+            validator: (input) =>
+                input.length < 1 ? 'Please input an account' : null,
             onSaved: (input) => _addedAccount = input,
             readOnly: false,
             decoration: InputDecoration(
@@ -447,7 +448,7 @@ class HomeState extends State<Home> {
           TextFormField(
             obscureText: _isHidden2,
             validator: (input) =>
-                input.length < 1 ? 'Please input password' : null,
+                input.length < 1 ? 'Please input a password' : null,
             onSaved: (input) => _addedPassword = input,
             readOnly: false,
             decoration: InputDecoration(
@@ -491,7 +492,7 @@ class HomeState extends State<Home> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 1 ? 'Please input something' : null,
+                input.length < 0 ? 'Please input something' : null,
             onSaved: (input) => _addedDescription = input,
             readOnly: false,
             maxLines: 5,
@@ -515,13 +516,15 @@ class HomeState extends State<Home> {
     if (formKey.currentState.validate()) {
       //save form inputs
       formKey.currentState.save();
+      var id = new DateTime.now().millisecondsSinceEpoch;
 
       //append entry item into items list
       items.insert(
           0,
           EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
-              _addedDescription));
+              _addedDescription, id));
 
+      debugPrint('UID : ' + id.toString());
       //EntryItem objects converted to JSON string
       itemsToJSON = jsonEncode(items);
 
@@ -550,8 +553,8 @@ getJsonFileString() async {
   }
 }
 
-List<ListItem> items = [EntryItem('', '', '', '', '')];
-List<ListItem> itemsDisplay = [EntryItem('', '', '', '', '')];
+List<ListItem> items = [];
+List<ListItem> itemsDisplay = [];
 
 String itemsToJSON;
 
@@ -563,7 +566,7 @@ abstract class ListItem {
   Widget buildUser(BuildContext context);
 
   /// The subtitle line, if any, to show in a list item.
-  Widget buildPass(BuildContext context);
+  Widget buildIndex(BuildContext context);
 }
 
 /// A ListItem that contains data to display a message.
@@ -573,16 +576,20 @@ class EntryItem implements ListItem {
   final String user;
   final String pass;
   final String description;
+  final int index;
 
-  EntryItem(this.account, this.email, this.user, this.pass, this.description);
+  EntryItem(this.account, this.email, this.user, this.pass, this.description,
+      this.index);
 
   factory EntryItem.fromJson(dynamic json) {
     return EntryItem(
-        json['account'] as String,
-        json['email'] as String,
-        json['user'] as String,
-        json['pass'] as String,
-        json['description'] as String);
+      json['account'] as String,
+      json['email'] as String,
+      json['user'] as String,
+      json['pass'] as String,
+      json['description'] as String,
+      json['index'] as int,
+    );
   }
 
   Map toJson() => {
@@ -591,13 +598,14 @@ class EntryItem implements ListItem {
         'user': user,
         'pass': pass,
         'description': description,
+        'index': index,
       };
 
   Widget buildAccount(BuildContext context) {
     return Text(
       account,
       style: TextStyle(
-          fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+          fontSize: 19, color: Colors.white, fontWeight: FontWeight.bold),
     );
   }
 
@@ -623,18 +631,15 @@ class EntryItem implements ListItem {
 
   Widget buildUser(BuildContext context) {
     return Container(
-      child: Text(
-        userOrEmail() + "\n" + "Password: " + newPass() + "\n",
-        style: TextStyle(color: Colors.white),
-      ),
-    );
+        child: Text(userOrEmail() + "\n" + "Password: " + newPass() + "\n",
+            style: TextStyle(color: Colors.white, fontSize: 13)));
   }
 
-  Widget buildPass(BuildContext context) => Text(pass);
+  Widget buildIndex(BuildContext context) => Text('$index');
 
   @override
   String toString() {
-    return '{${this.account}, ${this.email}, ${this.user}, ${this.pass}, ${this.description}}';
+    return '{${this.account}, ${this.email}, ${this.user}, ${this.pass}, ${this.description}}, ${this.index}';
   }
 }
 
