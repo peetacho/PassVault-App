@@ -448,7 +448,7 @@ class EntryItem implements ListItem {
   String newPass() {
     String newPass = '';
     for (var i = 0; i < pass.length; i++) {
-      newPass += '*';
+      newPass += '•';
     }
     return newPass;
   }
