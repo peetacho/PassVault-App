@@ -15,14 +15,6 @@ class PageOne extends StatefulWidget {
 }
 
 class PageOneState extends State<PageOne> {
-  String jsonStringString;
-  @override
-  void initState() {
-    getJsonFileString();
-
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -129,7 +121,7 @@ class PageOneState extends State<PageOne> {
                         },
                       ),
                     ]),
-                elevation: 4.0,
+                elevation: 5.0,
                 gradient: new LinearGradient(
                   colors: [entryColor[0], entryColor[1]],
                   begin: FractionalOffset.topLeft,

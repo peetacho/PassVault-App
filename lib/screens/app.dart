@@ -1,13 +1,15 @@
 // app.dart
+import 'entry/EntryPage.dart';
+import 'entry/pageOne.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'entry/pageOne.dart';
 
 // COLORS //
 Color _indigo = Color.fromRGBO(98, 122, 239, 1);
@@ -102,7 +104,7 @@ class HomeState extends State<Home> {
     _pageFour = PageFour(
       key: keyFour,
     );
-    getJsonFileString();
+    //getJsonFileString();
 
     // for storage
     pages = [_pageOne, _pageTwo, _pageThree, _pageFour];
@@ -123,7 +125,7 @@ class HomeState extends State<Home> {
   Future<Null> refreshList() async {
     refreshKey.currentState?.show(atTop: false);
     await Future.delayed(Duration(seconds: 1));
-    // getJsonFileString();
+    getJsonFileString();
     setState(() {
       (context as Element).reassemble();
     });
@@ -272,7 +274,7 @@ class HomeState extends State<Home> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        Text("Text"),
+                        Text(''),
                         Spacer(),
                         IconButton(
                             icon: Icon(Icons.close, size: 25),
@@ -285,44 +287,11 @@ class HomeState extends State<Home> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              TextFormField(
-                                  decoration:
-                                      InputDecoration(labelText: 'Account:'),
-                                  validator: (input) => input.length < 1
-                                      ? 'Please input an account'
-                                      : null,
-                                  onSaved: (input) => _addedAccount = input),
-                              TextFormField(
-                                  decoration:
-                                      InputDecoration(labelText: 'Email:'),
-                                  validator: (input) => input.length < 0
-                                      ? 'Please input a valid email'
-                                      : null,
-                                  onSaved: (input) => _addedEmail = input),
-                              TextFormField(
-                                  decoration:
-                                      InputDecoration(labelText: 'Username:'),
-                                  validator: (input) => input.length < 0
-                                      ? 'Please input an username'
-                                      : null,
-                                  onSaved: (input) => _addedUsername = input),
-                              TextFormField(
-                                decoration:
-                                    InputDecoration(labelText: 'Password:'),
-                                validator: (input) => input.length < 1
-                                    ? 'Please input a password'
-                                    : null,
-                                onSaved: (input) => _addedPassword = input,
-                                obscureText: true,
-                              ),
-                              TextFormField(
-                                  decoration: InputDecoration(
-                                      labelText: 'Description:'),
-                                  validator: (input) => input.length < 0
-                                      ? 'Please input an description'
-                                      : null,
-                                  onSaved: (input) =>
-                                      _addedDescription = input),
+                              entryAccountItem('Account'),
+                              entryUserItem('Username'),
+                              entryEmailItem('Email'),
+                              entryPassItem('Password'),
+                              entryDescItem('Description'),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
@@ -344,6 +313,202 @@ class HomeState extends State<Home> {
                 )),
           );
         });
+  }
+
+  entryAccountItem(label) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+            ),
+          ),
+          TextFormField(
+            validator: (input) => input.length < 1 ? 'Account missing' : null,
+            onSaved: (input) => _addedAccount = input,
+            readOnly: false,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: _searchBarColor,
+                focusColor: _searchBarColor,
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  entryUserItem(label) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+            ),
+          ),
+          TextFormField(
+            validator: (input) =>
+                input.length < 0 ? 'Please input something' : null,
+            onSaved: (input) => _addedUsername = input,
+            readOnly: false,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: _searchBarColor,
+                focusColor: _searchBarColor,
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  entryEmailItem(label) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+            ),
+          ),
+          TextFormField(
+            validator: (input) =>
+                input.length < 0 ? 'Please input something' : null,
+            onSaved: (input) => _addedEmail = input,
+            readOnly: false,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: _searchBarColor,
+                focusColor: _searchBarColor,
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _isHidden2 = true;
+
+  var _visb2 = Icons.visibility_off;
+
+  void _toggleVisibility() {
+    setState(() {
+      _isHidden2 = !_isHidden2;
+      if (_visb2 == Icons.visibility_off) {
+        _visb2 = Icons.visibility;
+      } else {
+        _visb2 = Icons.visibility_off;
+      }
+    });
+  }
+
+  entryPassItem(label) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+            ),
+          ),
+          TextFormField(
+            obscureText: _isHidden2,
+            validator: (input) =>
+                input.length < 1 ? 'Please input password' : null,
+            onSaved: (input) => _addedPassword = input,
+            readOnly: false,
+            decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    icon: Icon(
+                      _visb2,
+                      color: Color.fromRGBO(129, 131, 152, 1),
+                    ),
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onPressed: () {
+                      _toggleVisibility();
+                    }),
+                filled: true,
+                fillColor: _searchBarColor,
+                focusColor: _searchBarColor,
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0))),
+          ),
+        ],
+      ),
+    );
+  }
+
+  entryDescItem(label) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+            ),
+          ),
+          TextFormField(
+            validator: (input) =>
+                input.length < 1 ? 'Please input something' : null,
+            onSaved: (input) => _addedDescription = input,
+            readOnly: false,
+            maxLines: 5,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: _searchBarColor,
+                focusColor: _searchBarColor,
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0))),
+          ),
+        ],
+      ),
+    );
   }
 
   void _submit() {
@@ -372,18 +537,21 @@ var jsonFileString;
 getJsonFileString() async {
   final prefs = await SharedPreferences.getInstance();
   jsonFileString = prefs.getString('jsonFileString');
-  // debugPrint(jsonFileString);
-  // JSON String converted to EntryItem objects
-  var decodedItemsToJSON = jsonDecode(jsonFileString) as List;
-  List<ListItem> newItems =
-      decodedItemsToJSON.map((tagJson) => EntryItem.fromJson(tagJson)).toList();
+  if (jsonFileString != null) {
+    // debugPrint(jsonFileString);
+    // JSON String converted to EntryItem objects
+    var decodedItemsToJSON = jsonDecode(jsonFileString) as List;
+    List<ListItem> newItems = decodedItemsToJSON
+        .map((tagJson) => EntryItem.fromJson(tagJson))
+        .toList();
 
-  items = newItems;
-  itemsDisplay = newItems;
+    items = newItems;
+    itemsDisplay = newItems;
+  }
 }
 
-List<ListItem> items = [];
-List<ListItem> itemsDisplay = [];
+List<ListItem> items = [EntryItem('', '', '', '', '')];
+List<ListItem> itemsDisplay = [EntryItem('', '', '', '', '')];
 
 String itemsToJSON;
 

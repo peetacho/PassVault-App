@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'pageOne.dart';
+import '../app.dart';
 
 Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
 
 class EntryPage extends StatefulWidget {
   final item;
+  final JSONStorage jsonStorage = JSONStorage();
 
   EntryPage(this.item);
 
@@ -18,6 +21,13 @@ class EntryPageState extends State<EntryPage> {
 
   EntryPageState(this.item);
 
+  final formKey = GlobalKey<FormState>();
+  String _addedAccount,
+      _addedEmail,
+      _addedUsername,
+      _addedPassword,
+      _addedDescription;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -28,38 +38,100 @@ class EntryPageState extends State<EntryPage> {
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  'Edit',
-                  style: TextStyle(fontSize: 20.0),
-                ),
-                textColor: Colors.black,
+                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                highlightColor: Colors.transparent,
+                splashColor: Colors.transparent,
                 onPressed: () {
-                  _toggleEdit();
-                },
-              )
-            ],
+                  Navigator.pop(context);
+                }),
+            actions: <Widget>[editSubmit(item.account)],
             elevation: 0.0,
             backgroundColor: Colors.white),
         body: ListView.builder(
             itemCount: 1,
             itemBuilder: (context, index) {
-              return Column(
-                children: <Widget>[
-                  entryAccItem('Account', item.account),
-                  entryUserItem('Username', item.user),
-                  entryEmailItem('Email', item.email),
-                  entryPassItem('Password', item.pass),
-                  entryDescriptionItem('Description', item.description),
-                ],
-              );
+              return Form(
+                  key: formKey,
+                  child: Column(
+                    children: <Widget>[
+                      entryAccItem('Account', item.account),
+                      entryUserItem('Username', item.user),
+                      entryEmailItem('Email', item.email),
+                      entryPassItem('Password', item.pass),
+                      entryDescriptionItem('Description', item.description),
+                    ],
+                  ));
             }));
+  }
+
+  editSubmit(acc) {
+    if (_isEdit) {
+      return FlatButton(
+        child: Text(
+          'Edit',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        disabledTextColor: Colors.indigo,
+        textColor: Colors.black,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onPressed: () {
+          _toggleEdit();
+        },
+      );
+    } else {
+      return FlatButton(
+        child: Text(
+          'Submit',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        disabledTextColor: Colors.indigo,
+        textColor: Colors.blue[200],
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onPressed: () {
+          _toggleEdit();
+          _entrySubmit(acc);
+        },
+      );
+    }
+  }
+
+  _entrySubmit(acc) {
+    if (formKey.currentState.validate()) {
+      //save form inputs
+      formKey.currentState.save();
+      print(acc);
+      debugPrint("new Entry added: " +
+          EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
+                  _addedDescription)
+              .toString());
+
+      debugPrint('items list: ' + items.toList().toString());
+
+      int currentEntryIndex = items.indexWhere((element) => element
+          .buildAccount(context)
+          .toString()
+          .toLowerCase()
+          .contains(acc.toString().toLowerCase()));
+      debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
+
+      items.removeAt(currentEntryIndex);
+
+      //append entry item into items list
+      items.insert(
+          currentEntryIndex,
+          EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
+              _addedDescription));
+
+      //EntryItem objects converted to JSON string
+      itemsToJSON = jsonEncode(items);
+      print(itemsToJSON);
+
+      widget.jsonStorage.writeJSONStorage(itemsToJSON);
+
+      formKey.currentState.reset();
+    }
   }
 
   entryAccItem(label, item) {
@@ -75,7 +147,10 @@ class EntryPageState extends State<EntryPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
             ),
           ),
-          TextField(
+          TextFormField(
+            validator: (input) =>
+                input.length < 1 ? 'Please input account' : null,
+            onSaved: (input) => _addedAccount = input,
             controller: (accountPaste != null)
                 ? new TextEditingController(text: accountPaste)
                 : new TextEditingController(text: item),
@@ -130,7 +205,10 @@ class EntryPageState extends State<EntryPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
             ),
           ),
-          TextField(
+          TextFormField(
+            validator: (input) =>
+                input.length < 0 ? 'Please input username' : null,
+            onSaved: (input) => _addedUsername = input,
             controller: (usernamePaste != null)
                 ? new TextEditingController(text: usernamePaste)
                 : new TextEditingController(text: item),
@@ -185,7 +263,10 @@ class EntryPageState extends State<EntryPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
             ),
           ),
-          TextField(
+          TextFormField(
+            validator: (input) =>
+                input.length < 0 ? 'Please input email' : null,
+            onSaved: (input) => _addedEmail = input,
             controller: (emailPaste != null)
                 ? new TextEditingController(text: emailPaste)
                 : new TextEditingController(text: item),
@@ -266,7 +347,10 @@ class EntryPageState extends State<EntryPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
             ),
           ),
-          TextField(
+          TextFormField(
+            validator: (input) =>
+                input.length < 1 ? 'Please input password' : null,
+            onSaved: (input) => _addedPassword = input,
             controller: (passwordPaste != null)
                 ? new TextEditingController(text: passwordPaste)
                 : new TextEditingController(text: item),
@@ -367,7 +451,10 @@ class EntryPageState extends State<EntryPage> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
             ),
           ),
-          TextField(
+          TextFormField(
+            validator: (input) =>
+                input.length < 0 ? 'Please input description' : null,
+            onSaved: (input) => _addedDescription = input,
             readOnly: _isEdit,
             maxLines: 7,
             controller: (descriptPaste != null)
