@@ -193,8 +193,8 @@ class PageOneState extends State<PageOne> {
         (item.substring(6, otherQuoteIndex).replaceAll(' ', '').toLowerCase());
     int imageIndex;
     if (images != null) {
-      imageIndex = images
-          .indexWhere((element) => element.toString().contains(accountName));
+      imageIndex = images.indexWhere((element) => accountName.contains(
+          element.toString().replaceAll('assets/', "").replaceAll('.png', "")));
     }
 
     if (imageIndex == -1) {
