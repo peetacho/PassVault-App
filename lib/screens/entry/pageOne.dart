@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import '../app.dart';
 import 'EntryPage.dart';
 
 Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
+
+var images;
 
 /////////////////////////////////////PAGE ONE////////////////////////////////
 class PageOne extends StatefulWidget {
@@ -15,6 +19,12 @@ class PageOne extends StatefulWidget {
 }
 
 class PageOneState extends State<PageOne> {
+  @override
+  void initState() {
+    _initImages();
+    super.initState();
+  }
+
   Color _background = Color.fromRGBO(240, 243, 250, 1);
   @override
   Widget build(BuildContext context) {
@@ -86,6 +96,8 @@ class PageOneState extends State<PageOne> {
   _listItem(context, index) {
     final item = itemsDisplay[index];
 
+    //_findImage(item);
+
     int colorIndex = index % 4;
 
     switch (colorIndex) {
@@ -108,45 +120,80 @@ class PageOneState extends State<PageOne> {
           left: 8.0,
           right: 8.0,
         ),
+        padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
         height: 120.0,
-        child: Container(
-            padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
-            child: GradientCard(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(
-                          Icons.star_half,
-                          color: Colors.white,
-                          size: 50,
-                        ),
-                        title: item.buildAccount(context),
-                        subtitle: item.buildUser(context),
-                        trailing: IconButton(
-                            icon: Icon(
-                              Icons.more_vert,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            onPressed: () {}),
-                        isThreeLine: true,
-                        onTap: () {
-                          // print(item);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EntryPage(item)));
-                        },
+        child: Card(
+            child: Container(
+          decoration: BoxDecoration(
+              gradient: new LinearGradient(
+            colors: [entryColor[0], entryColor[1]],
+            begin: FractionalOffset.topLeft,
+            end: FractionalOffset.bottomRight,
+            stops: [0.0, 1],
+            tileMode: TileMode.clamp,
+          )),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ListTile(
+                  leading: _findImage(item),
+                  title: item.buildAccount(context),
+                  subtitle: item.buildUser(context),
+                  trailing: IconButton(
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Colors.white,
+                        size: 30,
                       ),
-                    ]),
-                elevation: 5.0,
-                gradient: new LinearGradient(
-                  colors: [entryColor[0], entryColor[1]],
-                  begin: FractionalOffset.topLeft,
-                  end: FractionalOffset.bottomRight,
-                  stops: [0.0, 1],
-                  tileMode: TileMode.clamp,
-                ))));
+                      onPressed: () {
+                        print('more vert');
+                      }),
+                  isThreeLine: true,
+                  onTap: () {
+                    // print(item);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EntryPage(item)));
+                  },
+                ),
+              ]),
+        )));
+  }
+
+  Future _initImages() async {
+    // >> To get paths you need these 2 lines
+    final manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+
+    final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
+    // >> To get paths you need these 2 lines
+
+    final imagePaths = manifestMap.keys
+        // .where((String key) => key.contains('images/'))
+        .where((String key) => key.contains('.png'))
+        .toList();
+
+    setState(() {
+      images = imagePaths;
+    });
+  }
+
+  _findImage(item) {
+    item = item.buildAccount(context).toString();
+    int otherQuoteIndex = item.indexOf('",');
+    String accountName =
+        (item.substring(6, otherQuoteIndex).replaceAll(' ', '').toLowerCase());
+    int imageIndex;
+    if (images != null) {
+      imageIndex = images
+          .indexWhere((element) => element.toString().contains(accountName));
+    }
+
+    if (imageIndex == -1) {
+      return new Icon(Icons.vpn_key, color: Colors.white, size: 50);
+    } else {
+      return new Tab(icon: Image.asset(images[imageIndex].toString()));
+    }
   }
 }

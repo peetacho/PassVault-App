@@ -292,20 +292,30 @@ class HomeState extends State<Home> {
                               entryEmailItem('Email'),
                               entryPassItem('Password'),
                               entryDescItem('Description'),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: RaisedButton(
-                                      onPressed: () {
-                                        _submit();
-                                      },
-                                      child: Text('Add Entry'),
-                                    ),
-                                  )
-                                ],
-                              )
+                              Container(
+                                  margin:
+                                      EdgeInsets.only(top: 15.0, bottom: 8.0),
+                                  child: SizedBox(
+                                    height: 55,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.85,
+                                    child: FlatButton(
+                                        color: entryColor2[0],
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Add Entry',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          _submit();
+                                        }),
+                                  )),
                             ],
                           )),
                     ),
@@ -631,7 +641,16 @@ class EntryItem implements ListItem {
 
   Widget buildUser(BuildContext context) {
     return Container(
-        child: Text(userOrEmail() + "\n" + "Password: " + newPass() + "\n",
+        child: Text(
+            'Username: ' +
+                user +
+                "\n" +
+                'Email: ' +
+                email +
+                "\n" +
+                "Password: " +
+                newPass() +
+                "\n",
             style: TextStyle(color: Colors.white, fontSize: 13)));
   }
 

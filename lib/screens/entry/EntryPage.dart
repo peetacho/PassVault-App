@@ -62,6 +62,7 @@ class EntryPageState extends State<EntryPage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
+                              entryIcon(),
                               entryAccItem('Account', item.account),
                               entryUserItem('Username', item.user),
                               entryEmailItem('Email', item.email),
@@ -72,6 +73,19 @@ class EntryPageState extends State<EntryPage> {
                             ],
                           ))));
             }));
+  }
+
+  entryIcon() {
+    return Container(
+        margin: EdgeInsets.only(top: 20, bottom: 15),
+        width: 100.0,
+        height: 100.0,
+        decoration: new BoxDecoration(
+            shape: BoxShape.rectangle,
+            image: new DecorationImage(
+              image: AssetImage('assets/instagram.png'),
+              fit: BoxFit.fill,
+            )));
   }
 
   deleteButton(acc) {
