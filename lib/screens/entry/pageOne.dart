@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:gradient_widgets/gradient_widgets.dart';
 import '../app.dart';
 import 'EntryPage.dart';
@@ -22,7 +23,26 @@ class PageOneState extends State<PageOne> {
   @override
   void initState() {
     _initImages();
+    (context as Element).reassemble();
     super.initState();
+  }
+
+  Future _initImages() async {
+    // >> To get paths you need these 2 lines
+    final manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+
+    final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
+    // >> To get paths you need these 2 lines
+
+    final imagePaths = manifestMap.keys
+        // .where((String key) => key.contains('images/'))
+        .where((String key) => key.contains('.png'))
+        .toList();
+
+    setState(() {
+      images = imagePaths;
+    });
   }
 
   Color _background = Color.fromRGBO(240, 243, 250, 1);
@@ -121,7 +141,7 @@ class PageOneState extends State<PageOne> {
           right: 8.0,
         ),
         padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
-        height: 120.0,
+        height: MediaQuery.of(context).size.height * 0.17,
         child: Card(
             child: Container(
           decoration: BoxDecoration(
@@ -135,6 +155,7 @@ class PageOneState extends State<PageOne> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Spacer(),
                 ListTile(
                   leading: _findImage(item),
                   title: item.buildAccount(context),
@@ -157,26 +178,9 @@ class PageOneState extends State<PageOne> {
                             builder: (context) => EntryPage(item)));
                   },
                 ),
+                Spacer(),
               ]),
         )));
-  }
-
-  Future _initImages() async {
-    // >> To get paths you need these 2 lines
-    final manifestContent =
-        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
-
-    final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
-    // >> To get paths you need these 2 lines
-
-    final imagePaths = manifestMap.keys
-        // .where((String key) => key.contains('images/'))
-        .where((String key) => key.contains('.png'))
-        .toList();
-
-    setState(() {
-      images = imagePaths;
-    });
   }
 
   _findImage(item) {
@@ -191,9 +195,9 @@ class PageOneState extends State<PageOne> {
     }
 
     if (imageIndex == -1) {
-      return new Icon(Icons.vpn_key, color: Colors.white, size: 50);
+      return Icon(Icons.vpn_key, color: Colors.white, size: 50);
     } else {
-      return new Tab(icon: Image.asset(images[imageIndex].toString()));
+      return Tab(icon: Image.asset(images[imageIndex].toString()));
     }
   }
 }

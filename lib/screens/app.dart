@@ -1,4 +1,5 @@
 // app.dart
+// ignore: unused_import
 import 'entry/EntryPage.dart';
 import 'entry/pageOne.dart';
 import 'dart:async';
@@ -7,6 +8,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// ignore: unused_import
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -267,10 +269,10 @@ class HomeState extends State<Home> {
         context: context,
         builder: (BuildContext bc) {
           return Container(
-            height: MediaQuery.of(context).size.height * 0.9,
+            height: MediaQuery.of(context).size.height * 0.95,
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
+                child: ListView(
                   children: <Widget>[
                     Row(
                       children: <Widget>[
@@ -296,11 +298,11 @@ class HomeState extends State<Home> {
                                   margin:
                                       EdgeInsets.only(top: 15.0, bottom: 8.0),
                                   child: SizedBox(
-                                    height: 55,
                                     width: MediaQuery.of(context).size.width *
                                         0.85,
                                     child: FlatButton(
-                                        color: entryColor2[0],
+                                        color:
+                                            Colors.green[400], //entryColor2[0],
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
@@ -346,7 +348,6 @@ class HomeState extends State<Home> {
             decoration: InputDecoration(
                 filled: true,
                 fillColor: _searchBarColor,
-                focusColor: _searchBarColor,
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: _searchBarColor),
                     borderRadius: BorderRadius.circular(8.0)),
@@ -642,16 +643,8 @@ class EntryItem implements ListItem {
   Widget buildUser(BuildContext context) {
     return Container(
         child: Text(
-            'Username: ' +
-                user +
-                "\n" +
-                'Email: ' +
-                email +
-                "\n" +
-                "Password: " +
-                newPass() +
-                "\n",
-            style: TextStyle(color: Colors.white, fontSize: 13)));
+            'U: ' + user + "\n" + 'E: ' + email + "\n" + "P: " + newPass(),
+            style: TextStyle(color: Colors.white, fontSize: 12)));
   }
 
   Widget buildIndex(BuildContext context) => Text('$index');

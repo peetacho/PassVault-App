@@ -15,11 +15,52 @@ class EntryPage extends StatefulWidget {
 }
 
 class EntryPageState extends State<EntryPage> {
+  @override
+  void initState() {
+    _initImages();
+
+    super.initState();
+    //refreshList();
+  }
+
+  Future _initImages() async {
+    // Get paths
+    final manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+
+    final Map<String, dynamic> manifestMap = jsonDecode(manifestContent);
+
+    final imagePaths = manifestMap.keys
+        // .where((String key) => key.contains('images/'))
+        .where((String key) => key.contains('.png'))
+        .toList();
+
+    setState(() {
+      images = imagePaths;
+    });
+  }
+
+  //var refreshKey = GlobalKey<RefreshIndicatorState>();
+
+  // Future<Null> refreshList() async {
+  //   refreshKey.currentState?.show(atTop: false);
+  //   await Future.delayed(Duration(seconds: 1));
+  //   getJsonFileString();
+  //   setState(() {
+  //     (context as Element).reassemble();
+  //   });
+
+  //   return null;
+  // }
+
   final item;
 
+  // ignore: unused_field
   Color _searchBarColor2 = Color.fromRGBO(229, 233, 244, 1);
   Color _searchBarColor = Colors.white;
-  Color _background = Color.fromRGBO(240, 243, 250, 1);
+  Color _background = Colors.transparent;
+  // ignore: unused_field
+  Color _background1 = Color.fromRGBO(240, 243, 250, 1);
   EntryPageState(this.item);
 
   final formKey = GlobalKey<FormState>();
@@ -32,50 +73,45 @@ class EntryPageState extends State<EntryPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-            title: new Text(
-              "PassVault",
-              style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-            ),
-            leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-            actions: <Widget>[editSubmit(item.index)],
-            elevation: 0.0,
-            backgroundColor: Colors.white),
-        body: ListView.builder(
-            itemCount: 1,
-            padding: EdgeInsets.all(0.0),
-            itemBuilder: (context, index) {
-              return Container(
-                  height: MediaQuery.of(context).size.height * 1,
-                  child: Form(
-                      key: formKey,
-                      child: Container(
-                          color: _background,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              entryIcon(),
-                              entryAccItem('Account', item.account),
-                              entryUserItem('Username', item.user),
-                              entryEmailItem('Email', item.email),
-                              entryPassItem('Password', item.pass),
-                              entryDescriptionItem(
-                                  'Description', item.description),
-                              deleteButton(item.index)
-                            ],
-                          ))));
-            }));
+      appBar: new AppBar(
+          // title: new Text(
+          //   "PassVault",
+          //   style:
+          //       TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          // ),
+          // leading: cancelSubmit(),
+          brightness: Brightness.light,
+          actions: <Widget>[cancelSubmit(), Spacer(), editSubmit(item.index)],
+          elevation: 0.0,
+          backgroundColor: Colors.white),
+      body: ListView.builder(
+          itemCount: 1,
+          padding: EdgeInsets.all(0.0),
+          itemBuilder: (context, index) {
+            return Container(
+                child: Form(
+                    key: formKey,
+                    child: Container(
+                        color: _background,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            entryIcon(item),
+                            entryAccItem('Account', item.account),
+                            entryUserItem('Username', item.user),
+                            entryEmailItem('Email', item.email),
+                            entryPassItem('Password', item.pass),
+                            entryDescriptionItem(
+                                'Description', item.description),
+                            deleteButton(item.index, _isDelete)
+                          ],
+                        ))));
+          }),
+    );
   }
 
-  entryIcon() {
+  entryIcon(item) {
     return Container(
         margin: EdgeInsets.only(top: 20, bottom: 15),
         width: 100.0,
@@ -83,35 +119,87 @@ class EntryPageState extends State<EntryPage> {
         decoration: new BoxDecoration(
             shape: BoxShape.rectangle,
             image: new DecorationImage(
-              image: AssetImage('assets/instagram.png'),
-              fit: BoxFit.fill,
-            )));
+                image: _findImage(item), fit: BoxFit.fill)));
   }
 
-  deleteButton(acc) {
-    return Container(
-        margin: EdgeInsets.only(top: 15.0, bottom: 8.0),
-        child: SizedBox(
-          height: 55,
-          width: MediaQuery.of(context).size.width * 0.85,
-          child: FlatButton(
-              color: entryColor2[0],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Center(
-                child: Text(
-                  'Delete Entry',
-                  style: TextStyle(color: Colors.white),
+  _findImage(item) {
+    item = item.buildAccount(context).toString();
+    int otherQuoteIndex = item.indexOf('",');
+    String accountName =
+        (item.substring(6, otherQuoteIndex).replaceAll(' ', '').toLowerCase());
+    int imageIndex;
+    if (images != null) {
+      imageIndex = images
+          .indexWhere((element) => element.toString().contains(accountName));
+    }
+
+    if (imageIndex == -1) {
+      return AssetImage('assets/key.png');
+    } else {
+      return AssetImage(images[imageIndex].toString());
+    }
+  }
+
+  bool _isDelete = false;
+
+  deleteButton(acc, isDelete) {
+    if (_isDelete) {
+      return Container(
+          margin: EdgeInsets.only(top: 15.0, bottom: 8.0),
+          child: SizedBox(
+            height: 55,
+            width: MediaQuery.of(context).size.width * 0.85,
+            child: FlatButton(
+                color: Colors.red[400], //entryColor2[0],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
-              ),
-              onPressed: () {
-                _entryDelete(acc);
-              }),
-        ));
+                child: Center(
+                  child: Text(
+                    'Delete Entry',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                onPressed: () {
+                  _entryDelete(acc);
+                }),
+          ));
+    } else {
+      return Container(
+        //returns blank space
+        margin: EdgeInsets.only(top: 80),
+      );
+    }
   }
 
   var _isFilled = true;
+
+  cancelSubmit() {
+    if (_isEdit) {
+      return IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          onPressed: () {
+            Navigator.pop(context);
+          });
+    } else {
+      return FlatButton(
+        child: Text(
+          'Cancel',
+          style: TextStyle(fontSize: 20.0),
+        ),
+        disabledTextColor: Colors.indigo,
+        textColor: Colors.red[400],
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        onPressed: () {
+          formKey.currentState.reset();
+          _toggleEdit();
+        },
+      );
+    }
+  }
 
   editSubmit(acc) {
     if (_isEdit) {
@@ -199,6 +287,8 @@ class EntryPageState extends State<EntryPage> {
       widget.jsonStorage.writeJSONStorage(itemsToJSON);
 
       formKey.currentState.reset();
+
+      Navigator.pop(context);
     }
   }
 
@@ -226,7 +316,6 @@ class EntryPageState extends State<EntryPage> {
             readOnly: _isEdit,
             decoration: InputDecoration(
                 filled: _isFilled,
-                hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
                       _copyPaste,
@@ -285,7 +374,6 @@ class EntryPageState extends State<EntryPage> {
             readOnly: _isEdit,
             decoration: InputDecoration(
                 filled: _isFilled,
-                hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
                       _copyPaste,
@@ -344,7 +432,6 @@ class EntryPageState extends State<EntryPage> {
             readOnly: _isEdit,
             decoration: InputDecoration(
                 filled: _isFilled,
-                hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
                       _copyPaste,
@@ -430,7 +517,6 @@ class EntryPageState extends State<EntryPage> {
             obscureText: _isHidden,
             decoration: InputDecoration(
                 filled: _isFilled,
-                hintText: item,
                 suffixIcon: Row(
                   mainAxisAlignment:
                       MainAxisAlignment.spaceBetween, // added line
@@ -495,6 +581,7 @@ class EntryPageState extends State<EntryPage> {
   void _toggleEdit() {
     setState(() {
       _isEdit = !_isEdit;
+      _isDelete = !_isDelete;
 
       if (_copyPaste == Icons.content_copy) {
         _copyPaste = Icons.content_paste;
@@ -536,7 +623,6 @@ class EntryPageState extends State<EntryPage> {
             decoration: InputDecoration(
                 // contentPadding: const EdgeInsets.symmetric(vertical: 60.0),
                 filled: _isFilled,
-                hintText: item,
                 suffixIcon: IconButton(
                     icon: Icon(
                       _copyPaste,
