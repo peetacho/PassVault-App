@@ -143,44 +143,47 @@ class PageOneState extends State<PageOne> {
         padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
         height: MediaQuery.of(context).size.height * 0.17,
         child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
             child: Container(
-          decoration: BoxDecoration(
-              gradient: new LinearGradient(
-            colors: [entryColor[0], entryColor[1]],
-            begin: FractionalOffset.topLeft,
-            end: FractionalOffset.bottomRight,
-            stops: [0.0, 1],
-            tileMode: TileMode.clamp,
-          )),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Spacer(),
-                ListTile(
-                  leading: _findImage(item),
-                  title: item.buildAccount(context),
-                  subtitle: item.buildUser(context),
-                  trailing: IconButton(
-                      icon: Icon(
-                        Icons.more_vert,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        print('more vert');
-                      }),
-                  isThreeLine: true,
-                  onTap: () {
-                    // print(item);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EntryPage(item)));
-                  },
-                ),
-                Spacer(),
-              ]),
-        )));
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  gradient: new LinearGradient(
+                    colors: [entryColor[0], entryColor[1]],
+                    begin: FractionalOffset.topLeft,
+                    end: FractionalOffset.bottomRight,
+                    stops: [0.0, 1],
+                    tileMode: TileMode.clamp,
+                  )),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Spacer(),
+                    ListTile(
+                      leading: _findImage(item),
+                      title: item.buildAccount(context),
+                      subtitle: item.buildUser(context),
+                      trailing: IconButton(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            print('more vert');
+                          }),
+                      isThreeLine: true,
+                      onTap: () {
+                        // print(item);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EntryPage(item)));
+                      },
+                    ),
+                    Spacer(),
+                  ]),
+            )));
   }
 
   _findImage(item) {
@@ -197,7 +200,11 @@ class PageOneState extends State<PageOne> {
     if (imageIndex == -1) {
       return Icon(Icons.vpn_key, color: Colors.white, size: 50);
     } else {
-      return Tab(icon: Image.asset(images[imageIndex].toString()));
+      return Container(
+          child: ColorFiltered(
+        child: Tab(icon: Image.asset(images[imageIndex].toString())),
+        colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+      ));
     }
   }
 }

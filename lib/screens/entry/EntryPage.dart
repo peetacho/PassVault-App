@@ -58,9 +58,9 @@ class EntryPageState extends State<EntryPage> {
   // ignore: unused_field
   Color _searchBarColor2 = Color.fromRGBO(229, 233, 244, 1);
   Color _searchBarColor = Colors.white;
-  Color _background = Colors.transparent;
+  Color _background1 = Colors.transparent;
   // ignore: unused_field
-  Color _background1 = Color.fromRGBO(240, 243, 250, 1);
+  Color _background = Color.fromRGBO(240, 243, 250, 1);
   EntryPageState(this.item);
 
   final formKey = GlobalKey<FormState>();
@@ -259,6 +259,8 @@ class EntryPageState extends State<EntryPage> {
     debugPrint('entry deleted');
 
     widget.jsonStorage.writeJSONStorage(itemsToJSON);
+
+    Navigator.pop(context);
   }
 
   _entrySubmit(acc) {

@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 // COLORS //
 Color _indigo = Color.fromRGBO(98, 122, 239, 1);
@@ -298,6 +299,7 @@ class HomeState extends State<Home> {
                                   margin:
                                       EdgeInsets.only(top: 15.0, bottom: 8.0),
                                   child: SizedBox(
+                                    height: 55,
                                     width: MediaQuery.of(context).size.width *
                                         0.85,
                                     child: FlatButton(
@@ -329,7 +331,8 @@ class HomeState extends State<Home> {
 
   entryAccountItem(label) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -362,7 +365,8 @@ class HomeState extends State<Home> {
 
   entryUserItem(label) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -396,7 +400,8 @@ class HomeState extends State<Home> {
 
   entryEmailItem(label) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -445,7 +450,8 @@ class HomeState extends State<Home> {
 
   entryPassItem(label) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -490,7 +496,8 @@ class HomeState extends State<Home> {
 
   entryDescItem(label) {
     return Container(
-      margin: EdgeInsets.fromLTRB(35.0, 8.0, 35.0, 8.0),
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -528,20 +535,23 @@ class HomeState extends State<Home> {
       //save form inputs
       formKey.currentState.save();
       var id = new DateTime.now().millisecondsSinceEpoch;
+      var uuid = UniqueKey().toString();
 
       //append entry item into items list
       items.insert(
           0,
           EntryItem(_addedAccount, _addedEmail, _addedUsername, _addedPassword,
-              _addedDescription, id));
+              _addedDescription, uuid));
 
-      debugPrint('UID : ' + id.toString());
+      debugPrint('UUID : ' + uuid);
       //EntryItem objects converted to JSON string
       itemsToJSON = jsonEncode(items);
 
       widget.jsonStorage.writeJSONStorage(itemsToJSON);
 
       formKey.currentState.reset();
+
+      Navigator.pop(context);
     }
   }
 }
@@ -587,7 +597,7 @@ class EntryItem implements ListItem {
   final String user;
   final String pass;
   final String description;
-  final int index;
+  final String index;
 
   EntryItem(this.account, this.email, this.user, this.pass, this.description,
       this.index);
@@ -599,7 +609,7 @@ class EntryItem implements ListItem {
       json['user'] as String,
       json['pass'] as String,
       json['description'] as String,
-      json['index'] as int,
+      json['index'] as String,
     );
   }
 
@@ -620,15 +630,18 @@ class EntryItem implements ListItem {
     );
   }
 
-  String userOrEmail() {
-    if (user == '' && email == '') {
+  String userOrEmail(type) {
+    if (type == 1) {
+      if (user == '' || user == null) {
+        return 'N/A';
+      } else {
+        return user;
+      }
+    } else if (type == 2) {}
+    if (email == '' || email == null) {
       return 'N/A';
     } else {
-      if (user == '' || user == null) {
-        return 'Email: ' + email;
-      } else {
-        return 'Username: ' + user;
-      }
+      return email;
     }
   }
 
@@ -643,7 +656,14 @@ class EntryItem implements ListItem {
   Widget buildUser(BuildContext context) {
     return Container(
         child: Text(
-            'U: ' + user + "\n" + 'E: ' + email + "\n" + "P: " + newPass(),
+            'U: ' +
+                userOrEmail(1) +
+                "\n" +
+                'E: ' +
+                userOrEmail(2) +
+                "\n" +
+                "P: " +
+                newPass(),
             style: TextStyle(color: Colors.white, fontSize: 12)));
   }
 
