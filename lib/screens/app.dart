@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 // COLORS //
 Color _indigo = Color.fromRGBO(98, 122, 239, 1);
@@ -669,9 +668,13 @@ class EntryItem implements ListItem {
 
   Widget buildIndex(BuildContext context) => Text('$index');
 
+  String getIndex() {
+    return index;
+  }
+
   @override
   String toString() {
-    return '{${this.account}, ${this.email}, ${this.user}, ${this.pass}, ${this.description}}, ${this.index}';
+    return '{${this.account}, ${this.email}, ${this.user}, ${this.pass}, ${this.description}, ${this.index}';
   }
 }
 

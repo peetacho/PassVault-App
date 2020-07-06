@@ -135,55 +135,87 @@ class PageOneState extends State<PageOne> {
         break;
     }
 
-    return Container(
-        margin: const EdgeInsets.only(
-          left: 8.0,
-          right: 8.0,
-        ),
-        padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
-        height: MediaQuery.of(context).size.height * 0.17,
-        child: Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0)),
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  gradient: new LinearGradient(
-                    colors: [entryColor[0], entryColor[1]],
-                    begin: FractionalOffset.topLeft,
-                    end: FractionalOffset.bottomRight,
-                    stops: [0.0, 1],
-                    tileMode: TileMode.clamp,
-                  )),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Spacer(),
-                    ListTile(
-                      leading: _findImage(item),
-                      title: item.buildAccount(context),
-                      subtitle: item.buildUser(context),
-                      trailing: IconButton(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            print('more vert');
-                          }),
-                      isThreeLine: true,
-                      onTap: () {
-                        // print(item);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EntryPage(item)));
-                      },
-                    ),
-                    Spacer(),
-                  ]),
-            )));
+    _entryDelete(acc) {
+      // int currentEntryIndex = items.indexWhere((element) => element
+      //     .buildAccount(context)
+      //     .toString()
+      //     .toLowerCase()
+      //     .contains(acc.toString().toLowerCase()));
+      // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
+
+      int currentEntryIndex = items.indexWhere((element) =>
+          element.buildIndex(context).toString().contains(acc.getIndex()));
+
+      //print(acc.getIndex());
+      //debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
+      //debugPrint('items BEFORE delete: ' + items.toList().toString());
+
+      items.removeAt(currentEntryIndex);
+      itemsToJSON = jsonEncode(items);
+      //debugPrint('items AFTER delete: ' + itemsToJSON);
+      //debugPrint('entry deleted');
+
+      widget.jsonStorage.writeJSONStorage(itemsToJSON);
+    }
+
+    return Dismissible(
+        onDismissed: (direction) {
+          _entryDelete(item);
+        },
+        background: Container(
+            padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
+            height: MediaQuery.of(context).size.height * 0.1,
+            color: Colors.red[400]),
+        key: Key(item.buildAccount(context).toString()),
+        child: Container(
+            margin: const EdgeInsets.only(
+              left: 8.0,
+              right: 8.0,
+            ),
+            padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
+            height: MediaQuery.of(context).size.height * 0.17,
+            child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      gradient: new LinearGradient(
+                        colors: [entryColor[0], entryColor[1]],
+                        begin: FractionalOffset.topLeft,
+                        end: FractionalOffset.bottomRight,
+                        stops: [0.0, 1],
+                        tileMode: TileMode.clamp,
+                      )),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Spacer(),
+                        ListTile(
+                          leading: _findImage(item),
+                          title: item.buildAccount(context),
+                          subtitle: item.buildUser(context),
+                          // trailing: IconButton(
+                          //     icon: Icon(
+                          //       Icons.more_vert,
+                          //       color: Colors.white,
+                          //       size: 30,
+                          //     ),
+                          //     onPressed: () {
+                          //       print('more vert');
+                          //     }),
+                          isThreeLine: true,
+                          onTap: () {
+                            // print(item);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EntryPage(item)));
+                          },
+                        ),
+                        Spacer(),
+                      ]),
+                ))));
   }
 
   _findImage(item) {
