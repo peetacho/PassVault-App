@@ -123,16 +123,12 @@ class EntryPageState extends State<EntryPage> {
   }
 
   _findImage(item) {
-    item = item.buildAccount(context).toString();
-    int otherQuoteIndex = item.indexOf('",');
-    String accountName =
-        (item.substring(6, otherQuoteIndex).replaceAll(' ', '').toLowerCase());
+    String accountName = item.getAccount().toLowerCase().replaceAll(' ', '');
     int imageIndex;
     if (images != null) {
-      imageIndex = images
-          .indexWhere((element) => element.toString().contains(accountName));
+      imageIndex = images.indexWhere((element) => accountName.contains(
+          element.toString().replaceAll('assets/', "").replaceAll('.png', "")));
     }
-
     if (imageIndex == -1) {
       return AssetImage('assets/key.png');
     } else {
@@ -238,28 +234,15 @@ class EntryPageState extends State<EntryPage> {
   }
 
   _entryDelete(acc) {
-    // int currentEntryIndex = items.indexWhere((element) => element
-    //     .buildAccount(context)
-    //     .toString()
-    //     .toLowerCase()
-    //     .contains(acc.toString().toLowerCase()));
-    // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
-
     int currentEntryIndex = items.indexWhere((element) =>
         element.buildIndex(context).toString().contains(acc.toString()));
-
     // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
-
     // debugPrint('items BEFORE delete: ' + items.toList().toString());
-
     items.removeAt(currentEntryIndex);
     itemsToJSON = jsonEncode(items);
     // debugPrint('items AFTER delete: ' + itemsToJSON);
-
     debugPrint('entry deleted');
-
     widget.jsonStorage.writeJSONStorage(itemsToJSON);
-
     Navigator.pop(context);
   }
 
@@ -270,8 +253,8 @@ class EntryPageState extends State<EntryPage> {
       // print(acc);
       debugPrint('entry submitted');
 
-      int currentEntryIndex = items.indexWhere((element) =>
-          element.buildIndex(context).toString().contains(acc.toString()));
+      int currentEntryIndex = items
+          .indexWhere((element) => element.getIndex().contains(acc.toString()));
       // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
 
       items.removeAt(currentEntryIndex);

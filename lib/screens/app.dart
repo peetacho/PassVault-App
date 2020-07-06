@@ -587,6 +587,8 @@ abstract class ListItem {
 
   /// The subtitle line, if any, to show in a list item.
   Widget buildIndex(BuildContext context);
+
+  String getIndex();
 }
 
 /// A ListItem that contains data to display a message.
@@ -654,6 +656,7 @@ class EntryItem implements ListItem {
 
   Widget buildUser(BuildContext context) {
     return Container(
+        margin: EdgeInsets.only(top: 6.0),
         child: Text(
             'U: ' +
                 userOrEmail(1) +
@@ -663,10 +666,30 @@ class EntryItem implements ListItem {
                 "\n" +
                 "P: " +
                 newPass(),
-            style: TextStyle(color: Colors.white, fontSize: 12)));
+            style: TextStyle(color: Colors.white, fontSize: 14)));
   }
 
   Widget buildIndex(BuildContext context) => Text('$index');
+
+  String getAccount() {
+    return account;
+  }
+
+  String getEmail() {
+    return email;
+  }
+
+  String getUser() {
+    return user;
+  }
+
+  String getPass() {
+    return pass;
+  }
+
+  String getDescription() {
+    return description;
+  }
 
   String getIndex() {
     return index;

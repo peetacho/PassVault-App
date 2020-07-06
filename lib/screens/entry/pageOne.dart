@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 // ignore: unused_import
 import 'package:gradient_widgets/gradient_widgets.dart';
 import '../app.dart';
 import 'EntryPage.dart';
 
 Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
+Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
 
 var images;
 
@@ -136,99 +138,98 @@ class PageOneState extends State<PageOne> {
     }
 
     _entryDelete(acc) {
-      // int currentEntryIndex = items.indexWhere((element) => element
-      //     .buildAccount(context)
-      //     .toString()
-      //     .toLowerCase()
-      //     .contains(acc.toString().toLowerCase()));
-      // debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
-
-      int currentEntryIndex = items.indexWhere((element) =>
-          element.buildIndex(context).toString().contains(acc.getIndex()));
-
+      int currentEntryIndex = items
+          .indexWhere((element) => element.getIndex().contains(acc.getIndex()));
       //print(acc.getIndex());
       //debugPrint('entry index, currentEntryIndex:  $currentEntryIndex');
       //debugPrint('items BEFORE delete: ' + items.toList().toString());
-
       items.removeAt(currentEntryIndex);
       itemsToJSON = jsonEncode(items);
       //debugPrint('items AFTER delete: ' + itemsToJSON);
       //debugPrint('entry deleted');
-
       widget.jsonStorage.writeJSONStorage(itemsToJSON);
     }
 
-    return Dismissible(
-        onDismissed: (direction) {
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
+      key: Key(item.buildAccount(context).toString()),
+      dismissal: SlidableDismissal(
+        child: SlidableDrawerDismissal(),
+        onDismissed: (actionType) {
           _entryDelete(item);
         },
-        background: Container(
-            padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
-            height: MediaQuery.of(context).size.height * 0.1,
-            color: Colors.red[400]),
-        key: Key(item.buildAccount(context).toString()),
-        child: Container(
-            margin: const EdgeInsets.only(
-              left: 8.0,
-              right: 8.0,
-            ),
-            padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
-            height: MediaQuery.of(context).size.height * 0.17,
-            child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      gradient: new LinearGradient(
-                        colors: [entryColor[0], entryColor[1]],
-                        begin: FractionalOffset.topLeft,
-                        end: FractionalOffset.bottomRight,
-                        stops: [0.0, 1],
-                        tileMode: TileMode.clamp,
-                      )),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Spacer(),
-                        ListTile(
-                          leading: _findImage(item),
-                          title: item.buildAccount(context),
-                          subtitle: item.buildUser(context),
-                          // trailing: IconButton(
-                          //     icon: Icon(
-                          //       Icons.more_vert,
-                          //       color: Colors.white,
-                          //       size: 30,
-                          //     ),
-                          //     onPressed: () {
-                          //       print('more vert');
-                          //     }),
-                          isThreeLine: true,
-                          onTap: () {
-                            // print(item);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EntryPage(item)));
-                          },
-                        ),
-                        Spacer(),
-                      ]),
-                ))));
+      ),
+      child: Container(
+          margin: const EdgeInsets.only(
+            left: 8.0,
+            right: 8.0,
+          ),
+          //padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
+          height: MediaQuery.of(context).size.height * 0.17,
+          child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0)),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    gradient: new LinearGradient(
+                      colors: [entryColor[0], entryColor[1]],
+                      begin: FractionalOffset.topLeft,
+                      end: FractionalOffset.bottomRight,
+                      stops: [0.0, 1],
+                      tileMode: TileMode.clamp,
+                    )),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Spacer(),
+                      ListTile(
+                        leading: _findImage(item),
+                        title: item.buildAccount(context),
+                        subtitle: item.buildUser(context),
+                        // trailing: IconButton(
+                        //     icon: Icon(
+                        //       Icons.more_vert,
+                        //       color: Colors.white,
+                        //       size: 30,
+                        //     ),
+                        //     onPressed: () {
+                        //       print('more vert');
+                        //     }),
+                        isThreeLine: true,
+                        onTap: () {
+                          // print(item);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EntryPage(item)));
+                        },
+                      ),
+                      Spacer(),
+                    ]),
+              ))),
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'Delete',
+          foregroundColor: Colors.black,
+          color: _indigoShadow,
+          icon: Icons.delete,
+          onTap: () {
+            _entryDelete(item);
+          },
+        ),
+      ],
+    );
   }
 
   _findImage(item) {
-    item = item.buildAccount(context).toString();
-    int otherQuoteIndex = item.indexOf('",');
-    String accountName =
-        (item.substring(6, otherQuoteIndex).replaceAll(' ', '').toLowerCase());
+    String accountName = item.getAccount().toLowerCase().replaceAll(' ', '');
     int imageIndex;
     if (images != null) {
       imageIndex = images.indexWhere((element) => accountName.contains(
           element.toString().replaceAll('assets/', "").replaceAll('.png', "")));
     }
-
     if (imageIndex == -1) {
       return Icon(Icons.vpn_key, color: Colors.white, size: 50);
     } else {
