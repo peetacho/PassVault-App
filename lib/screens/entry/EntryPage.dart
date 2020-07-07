@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'pageOne.dart';
 import '../app.dart';
+import 'jsonStorage.dart';
 
 class EntryPage extends StatefulWidget {
   final item;
-  final JSONStorage jsonStorage = JSONStorage();
+  // final JSONStorage jsonStorage = JSONStorage();
 
   EntryPage(this.item);
 
@@ -39,19 +40,6 @@ class EntryPageState extends State<EntryPage> {
       images = imagePaths;
     });
   }
-
-  //var refreshKey = GlobalKey<RefreshIndicatorState>();
-
-  // Future<Null> refreshList() async {
-  //   refreshKey.currentState?.show(atTop: false);
-  //   await Future.delayed(Duration(seconds: 1));
-  //   getJsonFileString();
-  //   setState(() {
-  //     (context as Element).reassemble();
-  //   });
-
-  //   return null;
-  // }
 
   final item;
 
@@ -242,8 +230,25 @@ class EntryPageState extends State<EntryPage> {
     itemsToJSON = jsonEncode(items);
     // debugPrint('items AFTER delete: ' + itemsToJSON);
     debugPrint('entry deleted');
-    widget.jsonStorage.writeJSONStorage(itemsToJSON);
-    Navigator.pop(context);
+    JSONStorage.writeJSONStorage(itemsToJSON);
+    Navigator.pushReplacement(
+      context,
+      new PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => new App(),
+        transitionsBuilder: (context, animation1, animation2, child) {
+          return SlideTransition(
+              position: Tween<Offset>(
+                      begin: const Offset(-1.0, 0.0), end: Offset.zero)
+                  .animate(animation1),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                        begin: Offset.zero, end: const Offset(-1.0, 0.0))
+                    .animate(animation2),
+                child: child,
+              ));
+        },
+      ),
+    );
   }
 
   _entrySubmit(acc) {
@@ -269,11 +274,15 @@ class EntryPageState extends State<EntryPage> {
       itemsToJSON = jsonEncode(items);
       //print(itemsToJSON);
 
-      widget.jsonStorage.writeJSONStorage(itemsToJSON);
+      JSONStorage.writeJSONStorage(itemsToJSON);
 
       formKey.currentState.reset();
 
-      Navigator.pop(context);
+      // Navigator.pop(context);
+      Navigator.push(
+        context,
+        new MaterialPageRoute(builder: (context) => new App()),
+      );
     }
   }
 

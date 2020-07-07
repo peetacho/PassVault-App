@@ -2,6 +2,7 @@
 // ignore: unused_import
 import 'entry/EntryPage.dart';
 import 'entry/pageOne.dart';
+import 'entry/jsonStorage.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -37,40 +38,9 @@ class App extends StatelessWidget {
   }
 }
 
-class JSONStorage {
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File("$path/jsonStorage.txt");
-  }
-
-  Future<String> readJSONStorage() async {
-    try {
-      final file = await _localFile;
-      String contents = await file.readAsString();
-      // debugPrint("reading readJSONStorage file stuff: " + contents);
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString('jsonFileString', contents);
-      return contents;
-    } catch (err) {
-      return "";
-    }
-  }
-
-  Future<File> writeJSONStorage(String str) async {
-    final file = await _localFile;
-    readJSONStorage();
-    return file.writeAsString(str);
-  }
-}
-
 class Home extends StatefulWidget {
   //instantiates jsonstorage class
-  final JSONStorage jsonStorage = JSONStorage();
+  // final JSONStorage jsonStorage = JSONStorage();
   @override
   HomeState createState() => HomeState();
 }
@@ -112,7 +82,7 @@ class HomeState extends State<Home> {
     pages = [_pageOne, _pageTwo, _pageThree, _pageFour];
     currentPage = _pageOne;
 
-    widget.jsonStorage.readJSONStorage().then((String result) => setState(() {
+    JSONStorage.readJSONStorage().then((String result) => setState(() {
           readToString = result;
         }));
 
@@ -128,9 +98,6 @@ class HomeState extends State<Home> {
     refreshKey.currentState?.show(atTop: false);
     await Future.delayed(Duration(seconds: 1));
     getJsonFileString();
-    setState(() {
-      (context as Element).reassemble();
-    });
 
     return null;
   }
@@ -533,7 +500,6 @@ class HomeState extends State<Home> {
     if (formKey.currentState.validate()) {
       //save form inputs
       formKey.currentState.save();
-      var id = new DateTime.now().millisecondsSinceEpoch;
       var uuid = UniqueKey().toString();
 
       //append entry item into items list
@@ -546,11 +512,28 @@ class HomeState extends State<Home> {
       //EntryItem objects converted to JSON string
       itemsToJSON = jsonEncode(items);
 
-      widget.jsonStorage.writeJSONStorage(itemsToJSON);
+      JSONStorage.writeJSONStorage(itemsToJSON);
 
       formKey.currentState.reset();
 
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        new PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => new App(),
+          transitionsBuilder: (context, animation1, animation2, child) {
+            return SlideTransition(
+                position: Tween<Offset>(
+                        begin: const Offset(0.0, -1.0), end: Offset.zero)
+                    .animate(animation1),
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                          begin: Offset.zero, end: const Offset(0.0, 1.0))
+                      .animate(animation2),
+                  child: child,
+                ));
+          },
+        ),
+      );
     }
   }
 }

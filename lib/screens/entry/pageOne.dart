@@ -6,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import '../app.dart';
 import 'EntryPage.dart';
+import 'jsonStorage.dart';
 
 Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
 Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
@@ -15,7 +16,7 @@ var images;
 /////////////////////////////////////PAGE ONE////////////////////////////////
 class PageOne extends StatefulWidget {
   PageOne({Key key}) : super(key: key);
-  final JSONStorage jsonStorage = JSONStorage();
+  // final JSONStorage jsonStorage = JSONStorage();
 
   @override
   PageOneState createState() => PageOneState();
@@ -137,7 +138,7 @@ class PageOneState extends State<PageOne> {
         break;
     }
 
-    _entryDelete(acc) {
+    _entryDelete(acc, mode) {
       int currentEntryIndex = items
           .indexWhere((element) => element.getIndex().contains(acc.getIndex()));
       //print(acc.getIndex());
@@ -147,7 +148,17 @@ class PageOneState extends State<PageOne> {
       itemsToJSON = jsonEncode(items);
       //debugPrint('items AFTER delete: ' + itemsToJSON);
       //debugPrint('entry deleted');
-      widget.jsonStorage.writeJSONStorage(itemsToJSON);
+      JSONStorage.writeJSONStorage(itemsToJSON);
+
+      if (mode == 1) {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            transitionDuration: Duration(seconds: 0),
+            pageBuilder: (context, animation1, animation2) => App(),
+          ),
+        );
+      }
     }
 
     return Slidable(
@@ -157,7 +168,7 @@ class PageOneState extends State<PageOne> {
       dismissal: SlidableDismissal(
         child: SlidableDrawerDismissal(),
         onDismissed: (actionType) {
-          _entryDelete(item);
+          _entryDelete(item, 2);
         },
       ),
       child: Container(
@@ -216,7 +227,7 @@ class PageOneState extends State<PageOne> {
           color: _indigoShadow,
           icon: Icons.delete,
           onTap: () {
-            _entryDelete(item);
+            _entryDelete(item, 1);
           },
         ),
       ],
