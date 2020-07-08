@@ -278,10 +278,23 @@ class EntryPageState extends State<EntryPage> {
 
       formKey.currentState.reset();
 
-      // Navigator.pop(context);
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
-        new MaterialPageRoute(builder: (context) => new App()),
+        new PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => new App(),
+          transitionsBuilder: (context, animation1, animation2, child) {
+            return SlideTransition(
+                position: Tween<Offset>(
+                        begin: const Offset(-1.0, 0.0), end: Offset.zero)
+                    .animate(animation1),
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                          begin: Offset.zero, end: const Offset(-1.0, 0.0))
+                      .animate(animation2),
+                  child: child,
+                ));
+          },
+        ),
       );
     }
   }

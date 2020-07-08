@@ -51,7 +51,28 @@ class PassPageState extends State<PassPage> {
                 setState(() {
                   passVaultPass = str;
                   if (passVaultPass == "pass") {
-                    runApp(App());
+                    Navigator.pushReplacement(
+                      context,
+                      new PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            new App(),
+                        transitionsBuilder:
+                            (context, animation1, animation2, child) {
+                          return SlideTransition(
+                              position: Tween<Offset>(
+                                      begin: const Offset(1.0, 0.0),
+                                      end: Offset.zero)
+                                  .animate(animation1),
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                        begin: Offset.zero,
+                                        end: const Offset(1.0, 0.0))
+                                    .animate(animation2),
+                                child: child,
+                              ));
+                        },
+                      ),
+                    );
                   }
                 });
               },

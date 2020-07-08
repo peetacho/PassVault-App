@@ -26,7 +26,7 @@ class PageOneState extends State<PageOne> {
   @override
   void initState() {
     _initImages();
-    (context as Element).reassemble();
+    JSONStorage.readJSONStorage();
     super.initState();
   }
 
@@ -168,7 +168,7 @@ class PageOneState extends State<PageOne> {
       }
     }
 
-    return Slidable(
+    return new Slidable(
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
       key: Key(item.buildAccount(context).toString()),
@@ -198,34 +198,26 @@ class PageOneState extends State<PageOne> {
                       stops: [0.0, 1],
                       tileMode: TileMode.clamp,
                     )),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Spacer(),
-                      ListTile(
-                        leading: _findImage(item),
-                        title: item.buildAccount(context),
-                        subtitle: item.buildUser(context),
-                        // trailing: IconButton(
-                        //     icon: Icon(
-                        //       Icons.more_vert,
-                        //       color: Colors.white,
-                        //       size: 30,
-                        //     ),
-                        //     onPressed: () {
-                        //       print('more vert');
-                        //     }),
-                        isThreeLine: true,
-                        onTap: () {
-                          // print(item);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EntryPage(item)));
-                        },
-                      ),
-                      Spacer(),
-                    ]),
+                child: FlatButton(
+                    onPressed: () {
+                      // print(item);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EntryPage(item)));
+                    },
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Spacer(),
+                          ListTile(
+                            leading: _findImage(item),
+                            title: item.buildAccount(context),
+                            subtitle: item.buildUser(context),
+                            isThreeLine: true,
+                          ),
+                          Spacer(),
+                        ])),
               ))),
       secondaryActions: <Widget>[
         IconSlideAction(

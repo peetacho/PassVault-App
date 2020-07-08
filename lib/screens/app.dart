@@ -2,6 +2,7 @@
 // ignore: unused_import
 import 'entry/EntryPage.dart';
 import 'entry/pageOne.dart';
+import 'entry/pageFour.dart';
 import 'entry/jsonStorage.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -15,7 +16,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 // COLORS //
 Color _indigo = Color.fromRGBO(98, 122, 239, 1);
 Color _indigo2 = Color.fromRGBO(149, 166, 244, 1);
-Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.6);
+Color _iconP2 = Color.fromRGBO(168, 171, 211, 1);
+Color _iconP3 = Color.fromRGBO(243, 179, 182, 1);
+Color _iconP4 = Color.fromRGBO(125, 126, 184, 1);
+Color _indigoShadow = Color.fromRGBO(206, 214, 244, 0.9);
 Color _background = Color.fromRGBO(240, 243, 250, 1);
 Color _searchBarColor = Color.fromRGBO(229, 233, 244, 1);
 Color _grey = Colors.grey[300];
@@ -46,6 +50,23 @@ class Home extends StatefulWidget {
 final PageStorageBucket bucket = PageStorageBucket();
 
 class HomeState extends State<Home> {
+  Future getJsonFileString() async {
+    final prefs = await SharedPreferences.getInstance();
+    jsonFileString = prefs.getString('jsonFileString');
+    if (jsonFileString != null) {
+      // debugPrint(jsonFileString);
+      // JSON String converted to EntryItem objects
+      var decodedItemsToJSON = jsonDecode(jsonFileString) as List;
+      List<ListItem> newItems = decodedItemsToJSON
+          .map((tagJson) => EntryItem.fromJson(tagJson))
+          .toList();
+      setState(() {
+        items = newItems;
+        itemsDisplay = newItems;
+      });
+    }
+  }
+
   final Key keyOne = PageStorageKey('pageOne');
   final Key keyTwo = PageStorageKey('pageTwo');
   final Key keyThree = PageStorageKey('pageThree');
@@ -124,7 +145,7 @@ class HomeState extends State<Home> {
         onPressed: () {
           _tripEditModalBottomSheet(context);
         },
-        elevation: 5,
+        elevation: 0,
         child: Container(
           decoration: BoxDecoration(
               border: Border.all(width: 9.0, color: _indigo),
@@ -167,7 +188,7 @@ class HomeState extends State<Home> {
                             _normalIcon1 = _grey;
                             _normalIcon3 = _grey;
                             _normalIcon4 = _grey;
-                            _normalIcon2 = _indigo2;
+                            _normalIcon2 = _iconP2;
                             currentPage = pages[1];
                           }
                         });
@@ -188,7 +209,7 @@ class HomeState extends State<Home> {
                             _normalIcon1 = _grey;
                             _normalIcon2 = _grey;
                             _normalIcon4 = _grey;
-                            _normalIcon3 = _indigo2;
+                            _normalIcon3 = _iconP3;
                             currentPage = pages[2];
                           }
                         });
@@ -203,7 +224,7 @@ class HomeState extends State<Home> {
                             _normalIcon1 = _grey;
                             _normalIcon2 = _grey;
                             _normalIcon3 = _grey;
-                            _normalIcon4 = _indigo2;
+                            _normalIcon4 = _iconP4;
                             currentPage = pages[3];
                           }
                         });
@@ -538,22 +559,6 @@ class HomeState extends State<Home> {
 
 var jsonFileString;
 
-getJsonFileString() async {
-  final prefs = await SharedPreferences.getInstance();
-  jsonFileString = prefs.getString('jsonFileString');
-  if (jsonFileString != null) {
-    // debugPrint(jsonFileString);
-    // JSON String converted to EntryItem objects
-    var decodedItemsToJSON = jsonDecode(jsonFileString) as List;
-    List<ListItem> newItems = decodedItemsToJSON
-        .map((tagJson) => EntryItem.fromJson(tagJson))
-        .toList();
-
-    items = newItems;
-    itemsDisplay = newItems;
-  }
-}
-
 List<ListItem> items = [];
 List<ListItem> itemsDisplay = [];
 
@@ -735,26 +740,6 @@ class PageThree extends StatefulWidget {
 }
 
 class PageThreeState extends State<PageThree> {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: 7,
-        itemBuilder: (BuildContext ctxt, int index) {
-          return Text('nice');
-        });
-  }
-}
-
-/////////////////////////////////////PAGE FOUR////////////////////////////////
-
-class PageFour extends StatefulWidget {
-  PageFour({Key key}) : super(key: key);
-
-  @override
-  PageFourState createState() => PageFourState();
-}
-
-class PageFourState extends State<PageFour> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
