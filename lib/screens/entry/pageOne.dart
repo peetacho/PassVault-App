@@ -75,6 +75,13 @@ class PageOneState extends State<PageOne> {
         ));
   }
 
+  _blank() {
+    print('empty');
+    return Center(
+      child: Text('Add an entry!'),
+    );
+  }
+
   _searchBar(context) {
     return Container(
         margin: const EdgeInsets.only(

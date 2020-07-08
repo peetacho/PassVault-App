@@ -17,16 +17,16 @@ void main() {
       scaffoldBackgroundColor: _background,
     ),
     debugShowCheckedModeBanner: false,
-    home: new MyTextInput(),
+    home: new PassPage(),
   ));
 }
 
-class MyTextInput extends StatefulWidget {
+class PassPage extends StatefulWidget {
   @override
-  MyTextInputState createState() => MyTextInputState();
+  PassPageState createState() => PassPageState();
 }
 
-class MyTextInputState extends State<MyTextInput> {
+class PassPageState extends State<PassPage> {
   String passVaultPass = "";
 
   @override
@@ -56,7 +56,6 @@ class MyTextInputState extends State<MyTextInput> {
                 });
               },
             ),
-            new Text(passVaultPass)
           ],
         )),
       ),
