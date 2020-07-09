@@ -42,6 +42,7 @@ class EntryPageState extends State<EntryPage> {
   }
 
   final item;
+  EntryPageState(this.item);
 
   // ignore: unused_field
   Color _searchBarColor2 = Color.fromRGBO(229, 233, 244, 1);
@@ -49,7 +50,6 @@ class EntryPageState extends State<EntryPage> {
   Color _background1 = Colors.transparent;
   // ignore: unused_field
   Color _background = Color.fromRGBO(240, 243, 250, 1);
-  EntryPageState(this.item);
 
   final formKey = GlobalKey<FormState>();
   String _addedAccount,
@@ -61,6 +61,7 @@ class EntryPageState extends State<EntryPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      backgroundColor: _background,
       appBar: new AppBar(
           // title: new Text(
           //   "PassVault",

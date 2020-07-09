@@ -124,6 +124,7 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      backgroundColor: _background,
       appBar: PreferredSize(
           child: AppBar(
               title: new Text(

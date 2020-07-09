@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
 import '../app.dart';
+import 'package:flutter/material.dart';
+import 'package:share/share.dart';
+import 'settingOptions.dart';
 
 /////////////////////////////////////PAGE FOUR////////////////////////////////
 
@@ -37,7 +39,7 @@ class PageFourState extends State<PageFour> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[_settingsTheme(), _settingsReport()],
+                  children: <Widget>[_settingsShare(), _settingsReport()],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -72,7 +74,10 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    print('pressed');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingOption('About')));
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +124,11 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    print('pressed');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                SettingOption('Set Password')));
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +155,7 @@ class PageFourState extends State<PageFour> {
                 ))));
   }
 
-  _settingsTheme() {
+  _settingsShare() {
     return Container(
         //padding: EdgeInsets.only(top: 3.0, bottom: 5.0),
         height: settingsHeight,
@@ -166,7 +175,9 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    print('pressed');
+                    Share.share(
+                        'Check out PassVault, a simple and easy to use password manager app:',
+                        subject: 'sup');
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -177,13 +188,13 @@ class PageFourState extends State<PageFour> {
                         width: 50.0,
                         height: 50.0,
                         child: Icon(
-                          Icons.color_lens,
+                          Icons.mobile_screen_share,
                           size: 60,
                           color: Colors.white,
                         ),
                       ),
                       Center(
-                        child: Text('Theme',
+                        child: Text('Share',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold)),
@@ -213,7 +224,11 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    print('pressed');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                SettingOption('Report a Bug')));
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -260,7 +275,11 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    print('pressed');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                SettingOption('Delete Local Data')));
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -307,7 +326,10 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    print('pressed');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettingOption('Credits')));
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
