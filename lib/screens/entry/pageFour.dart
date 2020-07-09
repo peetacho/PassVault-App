@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'jsonStorage.dart';
 import '../app.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 import 'settingOptions.dart';
@@ -281,11 +284,7 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                SettingOption('Delete Local Data')));
+                    displayDialog();
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -310,6 +309,40 @@ class PageFourState extends State<PageFour> {
                     ],
                   ),
                 ))));
+  }
+
+  void displayDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => new CupertinoAlertDialog(
+        title: Text('Delete all entries?'),
+        content: Text('This action can not be reverted.'),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.red))),
+          FlatButton(
+              onPressed: () {
+                deleteAll();
+                Navigator.of(context).pop();
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.blue))),
+        ],
+      ),
+    );
+  }
+
+  deleteAll() {
+    if (items != null) {
+      debugPrint('items BEFORE delete: ' + items.toList().toString());
+      items.clear();
+      itemsToJSON = jsonEncode(items);
+      debugPrint('items AFTER delete: ' + itemsToJSON);
+      debugPrint('all entries deleted');
+      JSONStorage.writeJSONStorage(itemsToJSON);
+    }
   }
 
   _settingsCredits() {

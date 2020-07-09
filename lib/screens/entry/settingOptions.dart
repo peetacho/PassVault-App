@@ -29,13 +29,7 @@ class SettingOptionState extends State<SettingOption> {
       case 'Set Password':
         return _settingsPass();
         break;
-      case 'Share':
-        return Text(option);
-        break;
       case 'Report a Bug':
-        return Text(option);
-        break;
-      case 'Delete Local Data':
         return Text(option);
         break;
       case 'Credits':
@@ -109,6 +103,40 @@ class SettingOptionState extends State<SettingOption> {
   }
 
   _settingsPass() {}
+
+  // void displayDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) => new CupertinoAlertDialog(
+  //       title: Text('Delete all entries?'),
+  //       content: Text('This action can not be reverted.'),
+  //       actions: <Widget>[
+  //         FlatButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('Cancel', style: TextStyle(color: Colors.red))),
+  //         FlatButton(
+  //             onPressed: () {
+  //               deleteAll();
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text('Delete', style: TextStyle(color: Colors.blue))),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // deleteAll() {
+  //   if (items != null) {
+  //     debugPrint('items BEFORE delete: ' + items.toList().toString());
+  //     items.clear();
+  //     itemsToJSON = jsonEncode(items);
+  //     debugPrint('items AFTER delete: ' + itemsToJSON);
+  //     debugPrint('all entries deleted');
+  //     JSONStorage.writeJSONStorage(itemsToJSON);
+  //   }
+  // }
 
   _settingsCredits() {
     return Container(

@@ -105,7 +105,6 @@ class HomeState extends State<Home> {
     );
 
     count();
-    print(counter);
 
     if (counter == 1) {
       getJsonFileString();
