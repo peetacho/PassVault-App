@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/app.dart';
 
 // void main() => runApp(App());
@@ -29,6 +30,19 @@ class PassPage extends StatefulWidget {
 class PassPageState extends State<PassPage> {
   String passVaultPass = "";
 
+  // Future getPassVaultPass() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   var pVPass = prefs.getString('passVaultPass');
+  //   setState(() {
+  //     passVaultPass = pVPass;
+  //   });
+  // }
+
+  // @override
+  // void initState() {
+  //   getPassVaultPass();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -50,7 +64,7 @@ class PassPageState extends State<PassPage> {
               onSubmitted: (String str) {
                 setState(() {
                   passVaultPass = str;
-                  if (passVaultPass == "pass") {
+                  if (true) {
                     Navigator.pushReplacement(
                       context,
                       new PageRouteBuilder(

@@ -175,9 +175,7 @@ class PageFourState extends State<PageFour> {
                     )),
                 child: FlatButton(
                   onPressed: () {
-                    Share.share(
-                        'Check out PassVault, a simple and easy to use password manager app:',
-                        subject: 'sup');
+                    _share(context);
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -202,6 +200,14 @@ class PageFourState extends State<PageFour> {
                     ],
                   ),
                 ))));
+  }
+
+  _share(context) {
+    final RenderBox box = context.findRenderObject();
+    Share.share(
+        'Check out PassVault, a simple and easy to use password manager app:',
+        sharePositionOrigin:
+            context.findRenderObject().localToGlobal(Offset.zero) & box.size);
   }
 
   _settingsReport() {

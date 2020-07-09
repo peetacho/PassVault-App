@@ -47,6 +47,7 @@ class Home extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
+int counter = 0;
 final PageStorageBucket bucket = PageStorageBucket();
 
 class HomeState extends State<Home> {
@@ -80,6 +81,13 @@ class HomeState extends State<Home> {
   Widget currentPage;
 
   String readToString;
+
+  void count() {
+    setState(() {
+      counter++;
+    });
+  }
+
   @override
   void initState() {
     // sets keys for different pages
@@ -95,7 +103,13 @@ class HomeState extends State<Home> {
     _pageFour = PageFour(
       key: keyFour,
     );
-    //getJsonFileString();
+
+    count();
+    print(counter);
+
+    if (counter == 1) {
+      getJsonFileString();
+    }
 
     // for storage
     pages = [_pageOne, _pageTwo, _pageThree, _pageFour];
