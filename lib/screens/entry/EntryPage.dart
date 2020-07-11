@@ -316,7 +316,7 @@ class EntryPageState extends State<EntryPage> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 1 ? 'Please input account' : null,
+                input.length < 1 ? 'Please enter an account' : null,
             onSaved: (input) => _addedAccount = input,
             controller: (accountPaste != null)
                 ? new TextEditingController(text: accountPaste)
@@ -374,7 +374,7 @@ class EntryPageState extends State<EntryPage> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 0 ? 'Please input username' : null,
+                input.length < 0 ? 'Please enter an username' : null,
             onSaved: (input) => _addedUsername = input,
             controller: (usernamePaste != null)
                 ? new TextEditingController(text: usernamePaste)
@@ -432,7 +432,7 @@ class EntryPageState extends State<EntryPage> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 0 ? 'Please input email' : null,
+                input.length < 0 ? 'Please enter an email' : null,
             onSaved: (input) => _addedEmail = input,
             controller: (emailPaste != null)
                 ? new TextEditingController(text: emailPaste)
@@ -516,7 +516,7 @@ class EntryPageState extends State<EntryPage> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 1 ? 'Please input password' : null,
+                input.length < 1 ? 'Please enter a password' : null,
             onSaved: (input) => _addedPassword = input,
             controller: (passwordPaste != null)
                 ? new TextEditingController(text: passwordPaste)
@@ -621,7 +621,7 @@ class EntryPageState extends State<EntryPage> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 0 ? 'Please input description' : null,
+                input.length < 0 ? 'Please enter a description' : null,
             onSaved: (input) => _addedDescription = input,
             readOnly: _isEdit,
             maxLines: 7,

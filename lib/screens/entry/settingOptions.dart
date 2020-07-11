@@ -81,15 +81,6 @@ class SettingOptionState extends State<SettingOption> {
                       'https://www.linkedin.com/in/peter-chow-07505b1b0/');
                 },
               ),
-              IconButton(
-                iconSize: 45.0,
-                icon: Tab(
-                  icon: Image.asset('assets/gmail.png'),
-                ),
-                onPressed: () {
-                  _launchURL('mailto:peterworks2001@gmail.com');
-                },
-              ),
             ],
           ),
           Spacer(),
@@ -171,7 +162,7 @@ class SettingOptionState extends State<SettingOption> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 1 ? 'Please input an account' : null,
+                input.length < 1 ? 'Please enter a subject.' : null,
             onSaved: (input) => _userSubject = input,
             readOnly: false,
             decoration: InputDecoration(
@@ -205,7 +196,7 @@ class SettingOptionState extends State<SettingOption> {
           ),
           TextFormField(
             validator: (input) =>
-                input.length < 0 ? 'Please input something' : null,
+                input.length < 1 ? 'Please enter a message' : null,
             onSaved: (input) => _userBody = input,
             readOnly: false,
             maxLines: 5,

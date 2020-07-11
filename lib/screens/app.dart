@@ -271,59 +271,62 @@ class HomeState extends State<Home> {
           return Container(
             height: MediaQuery.of(context).size.height * 0.95,
             child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  children: <Widget>[
-                    Row(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.builder(
+                  itemCount: 1,
+                  itemBuilder: (context, index) {
+                    return Column(
                       children: <Widget>[
-                        Text(''),
-                        Spacer(),
-                        IconButton(
-                            icon: Icon(Icons.close, size: 25),
-                            onPressed: () => Navigator.of(context).pop()),
-                      ],
-                    ),
-                    Container(
-                      child: Form(
-                          key: formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              entryAccountItem('Account'),
-                              entryUserItem('Username'),
-                              entryEmailItem('Email'),
-                              entryPassItem('Password'),
-                              entryDescItem('Description'),
-                              Container(
-                                  margin:
-                                      EdgeInsets.only(top: 15.0, bottom: 8.0),
-                                  child: SizedBox(
-                                    height: 55,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.85,
-                                    child: FlatButton(
-                                        color:
-                                            Colors.green[400], //entryColor2[0],
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Add Entry',
-                                            style:
-                                                TextStyle(color: Colors.white),
+                        Row(
+                          children: <Widget>[
+                            Text(''),
+                            Spacer(),
+                            IconButton(
+                                icon: Icon(Icons.close, size: 25),
+                                onPressed: () => Navigator.of(context).pop()),
+                          ],
+                        ),
+                        Form(
+                            key: formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                entryAccountItem('Account'),
+                                entryUserItem('Username'),
+                                entryEmailItem('Email'),
+                                entryPassItem('Password'),
+                                entryDescItem('Description'),
+                                Container(
+                                    margin:
+                                        EdgeInsets.only(top: 15.0, bottom: 8.0),
+                                    child: SizedBox(
+                                      height: 55,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.85,
+                                      child: FlatButton(
+                                          color: Colors
+                                              .green[400], //entryColor2[0],
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
                                           ),
-                                        ),
-                                        onPressed: () {
-                                          _submit();
-                                        }),
-                                  )),
-                            ],
-                          )),
-                    ),
-                  ],
-                )),
+                                          child: Center(
+                                            child: Text(
+                                              'Add Entry',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            _submit();
+                                          }),
+                                    )),
+                              ],
+                            ))
+                      ],
+                    );
+                  }),
+            ),
           );
         });
   }
