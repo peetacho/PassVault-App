@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/app.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // void main() => runApp(App());
 Color _background = Color.fromRGBO(240, 243, 250, 1);
@@ -28,20 +29,118 @@ class PassPage extends StatefulWidget {
 }
 
 class PassPageState extends State<PassPage> {
+  final _storage = FlutterSecureStorage();
   String passVaultPass = "";
+  bool hasPass = false;
 
-  // Future getPassVaultPass() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   var pVPass = prefs.getString('passVaultPass');
-  //   setState(() {
-  //     passVaultPass = pVPass;
-  //   });
-  // }
+  void _getPass() async {
+    final pvPass = await _storage.read(key: 'passVaultPass');
+    final hasPassBoolString = await _storage.read(key: 'hasPass');
 
-  // @override
-  // void initState() {
-  //   getPassVaultPass();
-  // }
+    if (hasPassBoolString != null) {
+      setState(() {
+        passVaultPass = pvPass;
+        hasPass = hasPassBoolString == 'true';
+      });
+    }
+  }
+
+  final LocalAuthentication auth = LocalAuthentication();
+  bool _canCheckBiometrics;
+  List<BiometricType> _availableBiometrics;
+  String _authorized = 'Not Authorized';
+  bool _isAuthenticating = false;
+
+  Future<void> _checkBiometrics() async {
+    bool canCheckBiometrics;
+    try {
+      canCheckBiometrics = await auth.canCheckBiometrics;
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _canCheckBiometrics = canCheckBiometrics;
+    });
+  }
+
+  Future<void> _getAvailableBiometrics() async {
+    List<BiometricType> availableBiometrics;
+    try {
+      availableBiometrics = await auth.getAvailableBiometrics();
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    setState(() {
+      _availableBiometrics = availableBiometrics;
+    });
+  }
+
+  Future<void> _authenticate() async {
+    bool authenticated = false;
+    try {
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticateWithBiometrics(
+          localizedReason: 'Scan your fingerprint to authenticate',
+          useErrorDialogs: true,
+          stickyAuth: true);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Authenticating';
+      });
+    } on PlatformException catch (e) {
+      print(e);
+    }
+    if (!mounted) return;
+
+    final String message = authenticated ? 'Authorized' : 'Not Authorized';
+    setState(() {
+      _authorized = message;
+    });
+
+    if (authenticated) {
+      _toApp();
+    }
+  }
+
+  void _cancelAuthentication() {
+    auth.stopAuthentication();
+  }
+
+  @override
+  void initState() {
+    _checkBiometrics();
+    _getAvailableBiometrics();
+    _getPass();
+    super.initState();
+  }
+
+  _toApp() {
+    Navigator.pushReplacement(
+      context,
+      new PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => new App(),
+        transitionsBuilder: (context, animation1, animation2, child) {
+          return SlideTransition(
+              position:
+                  Tween<Offset>(begin: const Offset(1.0, 0.0), end: Offset.zero)
+                      .animate(animation1),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                        begin: Offset.zero, end: const Offset(1.0, 0.0))
+                    .animate(animation2),
+                child: child,
+              ));
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,41 +158,54 @@ class PassPageState extends State<PassPage> {
             child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new TextField(
-              decoration: new InputDecoration(hintText: "Password"),
-              onSubmitted: (String str) {
-                setState(() {
-                  passVaultPass = str;
-                  if (true) {
-                    Navigator.pushReplacement(
-                      context,
-                      new PageRouteBuilder(
-                        pageBuilder: (context, animation1, animation2) =>
-                            new App(),
-                        transitionsBuilder:
-                            (context, animation1, animation2, child) {
-                          return SlideTransition(
-                              position: Tween<Offset>(
-                                      begin: const Offset(1.0, 0.0),
-                                      end: Offset.zero)
-                                  .animate(animation1),
-                              child: SlideTransition(
-                                position: Tween<Offset>(
-                                        begin: Offset.zero,
-                                        end: const Offset(1.0, 0.0))
-                                    .animate(animation2),
-                                child: child,
-                              ));
-                        },
-                      ),
-                    );
-                  }
-                });
-              },
-            ),
+            _logo(),
+            _hasPass(),
+            Text(passVaultPass + "    " + hasPass.toString()),
           ],
         )),
       ),
     );
+  }
+
+  _logo() {
+    return Container(
+        margin: EdgeInsets.only(bottom: 15),
+        width: 100.0,
+        height: 100.0,
+        decoration: new BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            shape: BoxShape.rectangle,
+            image: new DecorationImage(
+                image: AssetImage('assets/passvault.png'))));
+  }
+
+  _hasPass() {
+    if (hasPass) {
+      return Column(
+        children: <Widget>[
+          Text('Current State: $_authorized\n'),
+          RaisedButton(
+            child: Text(_isAuthenticating ? 'Cancel' : 'Authenticate'),
+            onPressed:
+                _isAuthenticating ? _cancelAuthentication : _authenticate,
+          ),
+          TextField(
+            decoration: new InputDecoration(hintText: "Password"),
+            onSubmitted: (String str) {
+              if (passVaultPass == str) {
+                _toApp();
+              }
+            },
+          ),
+        ],
+      );
+    } else {
+      return RaisedButton(
+        child: Text('welcome'),
+        onPressed: () {
+          runApp(App());
+        },
+      );
+    }
   }
 }

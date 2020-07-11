@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 
@@ -95,7 +96,100 @@ class SettingOptionState extends State<SettingOption> {
     );
   }
 
-  _settingsPass() {}
+  final _storage = FlutterSecureStorage();
+  final formKeyPass = GlobalKey<FormState>();
+
+  String _passVaultPass;
+
+  void _setPass() async {
+    if (formKeyPass.currentState.validate()) {
+      formKeyPass.currentState.save();
+
+      await _storage.write(key: 'passVaultPass', value: _passVaultPass);
+      await _storage.write(key: 'hasPass', value: 'true');
+      // debugPrint(_passVaultPass);
+
+      formKeyPass.currentState.reset();
+    }
+  }
+
+  _settingsPass() {
+    return Container(
+      padding: EdgeInsets.all(15.0),
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: Form(
+                key: formKeyPass,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    inputPassVaultPass(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                        child: SizedBox(
+                      height: 55,
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      child: FlatButton(
+                          color: Colors.green[400], //entryColor2[0],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Set password',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          onPressed: () {
+                            _setPass();
+                          }),
+                    )),
+                  ],
+                )),
+          ),
+        ],
+      ),
+    );
+  }
+
+  inputPassVaultPass() {
+    return Container(
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.85,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              'Subject',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
+            ),
+          ),
+          TextFormField(
+            validator: (input) =>
+                input.length < 1 ? 'Please enter a password.' : null,
+            onSaved: (input) => _passVaultPass = input,
+            readOnly: false,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: _searchBarColor,
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: _searchBarColor),
+                    borderRadius: BorderRadius.circular(8.0))),
+          ),
+        ],
+      ),
+    );
+  }
 
   final formKey = GlobalKey<FormState>();
   String _userSubject, _userBody;
