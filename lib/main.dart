@@ -6,6 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // void main() => runApp(App());
 Color _background = Color.fromRGBO(240, 243, 250, 1);
+Color _searchBarColor = Color.fromRGBO(229, 233, 244, 0.4);
+
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.black, //top bar color
@@ -14,10 +16,6 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   runApp(new MaterialApp(
-    theme: ThemeData(
-      backgroundColor: _background,
-      scaffoldBackgroundColor: _background,
-    ),
     debugShowCheckedModeBanner: false,
     home: new PassPage(),
   ));
@@ -31,6 +29,8 @@ class PassPage extends StatefulWidget {
 class PassPageState extends State<PassPage> {
   final _storage = FlutterSecureStorage();
   String passVaultPass = "";
+  String _userInputPass = "";
+
   bool hasPass = false;
 
   void _getPass() async {
@@ -42,6 +42,11 @@ class PassPageState extends State<PassPage> {
         passVaultPass = pvPass;
         hasPass = hasPassBoolString == 'true';
       });
+    }
+
+    print(hasPass);
+    if (!hasPass) {
+      nextApp();
     }
   }
 
@@ -109,6 +114,11 @@ class PassPageState extends State<PassPage> {
     }
   }
 
+  Future<void> nextApp() async {
+    await new Future.delayed(const Duration(seconds: 3));
+    _toApp();
+  }
+
   void _cancelAuthentication() {
     auth.stopAuthentication();
   }
@@ -142,25 +152,46 @@ class PassPageState extends State<PassPage> {
     );
   }
 
+  var entryColor0 = [
+    Color.fromRGBO(129, 158, 241, 1),
+    Color.fromRGBO(163, 185, 245, 1)
+  ];
+
+  var entryColor1 = [
+    Color.fromRGBO(126, 129, 185, 1),
+    Color.fromRGBO(168, 171, 211, 1)
+  ];
+
+  var entryColor2 = [
+    Color.fromRGBO(238, 140, 149, 1),
+    Color.fromRGBO(243, 179, 182, 1)
+  ];
+
+  var entryColor3 = [
+    Color.fromRGBO(62, 65, 144, 1),
+    Color.fromRGBO(125, 126, 184, 1)
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-          title: new Text(
-            "PassVault",
-            style: TextStyle(color: Colors.black),
-          ),
-          elevation: 0.0,
-          brightness: Brightness.light,
-          backgroundColor: Colors.white),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
       body: new Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            gradient: new LinearGradient(
+              colors: [entryColor2[0], entryColor0[1]],
+              begin: FractionalOffset.topLeft,
+              end: FractionalOffset.bottomRight,
+              stops: [0.0, 1],
+              tileMode: TileMode.clamp,
+            )),
         child: new Center(
             child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             _logo(),
-            _hasPass(),
-            Text(passVaultPass + "    " + hasPass.toString()),
+            _hasPass(context),
           ],
         )),
       ),
@@ -175,37 +206,174 @@ class PassPageState extends State<PassPage> {
         decoration: new BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
             shape: BoxShape.rectangle,
-            image: new DecorationImage(
-                image: AssetImage('assets/passvault.png'))));
+            image: new DecorationImage(image: AssetImage('assets/Lock.png'))));
   }
 
-  _hasPass() {
+  _hasPass(context) {
     if (hasPass) {
       return Column(
         children: <Widget>[
-          Text('Current State: $_authorized\n'),
-          RaisedButton(
-            child: Text(_isAuthenticating ? 'Cancel' : 'Authenticate'),
-            onPressed:
-                _isAuthenticating ? _cancelAuthentication : _authenticate,
+          _loginPassField(),
+          // Text('Current State: $_authorized\n'),
+          SizedBox(
+            height: 15,
+          ),
+          _loginButton(_userInputPass, context),
+          SizedBox(
+            height: 15,
+          ),
+          _loginAuth(),
+        ],
+      );
+    } else {
+      return Text('Welcome!',
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24));
+
+      // return Center(
+      //     child: SizedBox(
+      //   height: 55,
+      //   width: 150,
+      //   child: FlatButton(
+      //       color: Colors.white, //entryColor2[0],
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(8.0),
+      //       ),
+      //       child: Center(
+      //         child: Text(
+      //           'Welcome!',
+      //           style: TextStyle(
+      //               color: Color.fromRGBO(183, 172, 212, 1),
+      //               fontWeight: FontWeight.bold,
+      //               fontSize: 17),
+      //         ),
+      //       ),
+      //       onPressed: () {
+      //         _toApp();
+      //       }),
+      // ));
+    }
+  }
+
+  _loginPassField() {
+    return Container(
+      margin: EdgeInsets.only(top: 8.0, right: 8.0),
+      width: MediaQuery.of(context).size.width * 0.75,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Center(
+              child: Text(
+                'Password',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                    color: Colors.white),
+              ),
+            ),
           ),
           TextField(
-            decoration: new InputDecoration(hintText: "Password"),
+            cursorColor: Colors.white,
+            style: TextStyle(color: Colors.white),
+            readOnly: false,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: _searchBarColor,
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: _searchBarColor),
+                  borderRadius: BorderRadius.circular(8.0)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: _searchBarColor),
+                  borderRadius: BorderRadius.circular(8.0)),
+            ),
+            onChanged: (String str) {
+              setState(() {
+                _userInputPass = str;
+              });
+            },
             onSubmitted: (String str) {
               if (passVaultPass == str) {
                 _toApp();
               }
             },
-          ),
+          )
         ],
+      ),
+    );
+  }
+
+  _loginButton(inputPass, context) {
+    return Center(
+        child: SizedBox(
+      height: 55,
+      width: 230,
+      child: FlatButton(
+          color: Colors.white, //entryColor2[0],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Center(
+            child: Text(
+              'Login With Password',
+              style: TextStyle(
+                  color: Color.fromRGBO(183, 172, 212, 1),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17),
+            ),
+          ),
+          onPressed: () {
+            if (passVaultPass == inputPass) {
+              _toApp();
+            }
+          }),
+    ));
+  }
+
+  String _loginFaceTouchString() {
+    if (_availableBiometrics.toString() == "[]") {
+      return '';
+    } else {
+      if (_availableBiometrics.contains(BiometricType.face)) {
+        return 'Login With Face ID';
+      } else if (_availableBiometrics.contains(BiometricType.fingerprint)) {
+        return 'Login With Face ID';
+      }
+    }
+  }
+
+  _loginAuth() {
+    if (_availableBiometrics.toString() == "[]") {
+      return SizedBox(
+        height: 1,
       );
     } else {
-      return RaisedButton(
-        child: Text('welcome'),
-        onPressed: () {
-          runApp(App());
-        },
-      );
+      _loginFaceTouch();
     }
+  }
+
+  _loginFaceTouch() {
+    return Center(
+        child: SizedBox(
+      height: 55,
+      width: 230,
+      child: FlatButton(
+        color: Colors.white, //entryColor2[0],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Center(
+          child: Text(
+            _isAuthenticating ? 'Cancel' : _loginFaceTouchString(),
+            style: TextStyle(
+                color: Color.fromRGBO(183, 172, 212, 1),
+                fontWeight: FontWeight.bold,
+                fontSize: 17),
+          ),
+        ),
+        onPressed: _isAuthenticating ? _cancelAuthentication : _authenticate,
+      ),
+    ));
   }
 }
