@@ -178,14 +178,13 @@ class PassPageState extends State<PassPage> {
       backgroundColor: Colors.transparent,
       body: new Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0),
             gradient: new LinearGradient(
-              colors: [entryColor2[0], entryColor0[1]],
-              begin: FractionalOffset.topLeft,
-              end: FractionalOffset.bottomRight,
-              stops: [0.0, 1],
-              tileMode: TileMode.clamp,
-            )),
+          colors: [entryColor2[0], entryColor0[1]],
+          begin: FractionalOffset.topLeft,
+          end: FractionalOffset.bottomRight,
+          stops: [0.0, 1],
+          tileMode: TileMode.clamp,
+        )),
         child: new Center(
             child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -222,7 +221,7 @@ class PassPageState extends State<PassPage> {
           SizedBox(
             height: 15,
           ),
-          _loginAuth(),
+          _loginFaceTouch(),
         ],
       );
     } else {
@@ -275,6 +274,7 @@ class PassPageState extends State<PassPage> {
             ),
           ),
           TextField(
+            obscureText: true,
             cursorColor: Colors.white,
             style: TextStyle(color: Colors.white),
             readOnly: false,
@@ -333,13 +333,9 @@ class PassPageState extends State<PassPage> {
 
   String _loginFaceTouchString() {
     if (_availableBiometrics.toString() == "[]") {
-      return '';
+      return 'Biometrics N/A';
     } else {
-      if (_availableBiometrics.contains(BiometricType.face)) {
-        return 'Login With Face ID';
-      } else if (_availableBiometrics.contains(BiometricType.fingerprint)) {
-        return 'Login With Face ID';
-      }
+      return 'Login With Biometrics';
     }
   }
 
@@ -349,7 +345,7 @@ class PassPageState extends State<PassPage> {
         height: 1,
       );
     } else {
-      _loginFaceTouch();
+      return _loginFaceTouch();
     }
   }
 
