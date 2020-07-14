@@ -2,6 +2,7 @@
 // ignore: unused_import
 import 'entry/EntryPage.dart';
 import 'entry/pageOne.dart';
+import 'entry/pageThree.dart';
 import 'entry/pageFour.dart';
 import 'entry/jsonStorage.dart';
 import 'dart:async';
@@ -744,25 +745,5 @@ class PageTwoState extends State<PageTwo> {
         return Text('nice');
       },
     );
-  }
-}
-
-/////////////////////////////////////PAGE THREE////////////////////////////////
-
-class PageThree extends StatefulWidget {
-  PageThree({Key key}) : super(key: key);
-
-  @override
-  PageThreeState createState() => PageThreeState();
-}
-
-class PageThreeState extends State<PageThree> {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: 7,
-        itemBuilder: (BuildContext ctxt, int index) {
-          return Text('nice');
-        });
   }
 }

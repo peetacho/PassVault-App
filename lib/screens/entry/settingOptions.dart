@@ -167,7 +167,7 @@ class SettingOptionState extends State<SettingOption> {
           Container(
             margin: EdgeInsets.only(bottom: 5.0),
             child: Text(
-              'Subject',
+              'New Password',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.0),
             ),
           ),
