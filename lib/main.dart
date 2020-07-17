@@ -3,14 +3,10 @@ import 'package:flutter/services.dart';
 import 'screens/app.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 
 // void main() => runApp(App());
 Color _background = Color.fromRGBO(240, 243, 250, 1);
 Color _searchBarColor = Color.fromRGBO(229, 233, 244, 0.4);
-
-// AD //
-const String testDevice = '';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -127,43 +123,12 @@ class PassPageState extends State<PassPage> {
     auth.stopAuthentication();
   }
 
-  // ADS
-  static final MobileAdTargetingInfo targetInfo = new MobileAdTargetingInfo(
-    testDevices: <String>[],
-    keywords: <String>['Game'],
-    nonPersonalizedAds: true,
-  );
-
-  BannerAd _bannerAd;
-
-  BannerAd createBannerAd() {
-    return new BannerAd(
-        adUnitId: BannerAd.testAdUnitId,
-        size: AdSize.banner,
-        targetingInfo: targetInfo,
-        listener: (MobileAdEvent event) {
-          print("BannerAd: $event");
-        });
-  }
-
   @override
   void initState() {
     _checkBiometrics();
     _getAvailableBiometrics();
     _getPass();
-
-    // AD //
-    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
-    _bannerAd = createBannerAd()
-      ..load()
-      ..show();
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _bannerAd?.dispose();
-    super.dispose();
   }
 
   _toApp() {
@@ -263,6 +228,29 @@ class PassPageState extends State<PassPage> {
       return Text('Welcome!',
           style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24));
+
+      // return Center(
+      //     child: SizedBox(
+      //   height: 55,
+      //   width: 150,
+      //   child: FlatButton(
+      //       color: Colors.white, //entryColor2[0],
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(8.0),
+      //       ),
+      //       child: Center(
+      //         child: Text(
+      //           'Welcome!',
+      //           style: TextStyle(
+      //               color: Color.fromRGBO(183, 172, 212, 1),
+      //               fontWeight: FontWeight.bold,
+      //               fontSize: 17),
+      //         ),
+      //       ),
+      //       onPressed: () {
+      //         _toApp();
+      //       }),
+      // ));
     }
   }
 

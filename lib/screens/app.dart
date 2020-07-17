@@ -2,7 +2,6 @@
 // ignore: unused_import
 import 'entry/EntryPage.dart';
 import 'entry/pageOne.dart';
-import 'entry/pageTwo.dart';
 import 'entry/pageThree.dart';
 import 'entry/pageFour.dart';
 import 'entry/jsonStorage.dart';
@@ -11,8 +10,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_admob/firebase_admob.dart';
-
 // ignore: unused_import
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,9 +30,6 @@ Color _normalIcon1 = Color.fromRGBO(149, 166, 244, 1);
 Color _normalIcon2 = Colors.grey[300];
 Color _normalIcon3 = Colors.grey[300];
 Color _normalIcon4 = Colors.grey[300];
-
-// AD //
-const String testDevice = '';
 
 class App extends StatelessWidget {
   @override
@@ -95,35 +89,6 @@ class HomeState extends State<Home> {
     });
   }
 
-  // ADS
-  // static final MobileAdTargetingInfo targetInfo = new MobileAdTargetingInfo(
-  //   testDevices: <String>[],
-  //   keywords: <String>['Game'],
-  //   nonPersonalizedAds: true,
-  // );
-
-  // BannerAd _bannerAd;
-  // InterstitialAd _interstitialAd;
-
-  // BannerAd createBannerAd() {
-  //   return new BannerAd(
-  //       adUnitId: BannerAd.testAdUnitId,
-  //       size: AdSize.banner,
-  //       targetingInfo: targetInfo,
-  //       listener: (MobileAdEvent event) {
-  //         print("BannerAd: $event");
-  //       });
-  // }
-
-  // InterstitialAd createInterstitialAd() {
-  //   return new InterstitialAd(
-  //       adUnitId: InterstitialAd.testAdUnitId,
-  //       targetingInfo: targetInfo,
-  //       listener: (MobileAdEvent event) {
-  //         print("InterstitialAd: $event");
-  //       });
-  // }
-
   @override
   void initState() {
     // sets keys for different pages
@@ -154,23 +119,11 @@ class HomeState extends State<Home> {
           readToString = result;
         }));
 
-    // // AD //
-    // FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
-    // _bannerAd = createBannerAd()
-    //   ..load()
-    //   ..show();
-
     super.initState();
 
     // for refresh page
     refreshList();
   }
-
-  // @override
-  // void dispose() {
-  //   _bannerAd?.dispose();
-  //   super.dispose();
-  // }
 
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
@@ -773,3 +726,24 @@ var entryColor3 = [
   Color.fromRGBO(62, 65, 144, 1),
   Color.fromRGBO(125, 126, 184, 1)
 ];
+
+/////////////////////////////////////PAGE TWO////////////////////////////////
+
+class PageTwo extends StatefulWidget {
+  PageTwo({Key key}) : super(key: key);
+
+  @override
+  PageTwoState createState() => PageTwoState();
+}
+
+class PageTwoState extends State<PageTwo> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 7,
+      itemBuilder: (context, index) {
+        return Text('nice');
+      },
+    );
+  }
+}
