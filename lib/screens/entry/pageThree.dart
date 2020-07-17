@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:flutter/services.dart';
 import '../app.dart';
 import 'EntryPage.dart';
 import 'names.dart';
@@ -23,6 +24,12 @@ String userCheckPass = '';
 String userCheckPassStrength = 'No input';
 
 class PageThreeState extends State<PageThree> {
+  @override
+  void initState() {
+    _generatePass();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -65,6 +72,8 @@ class PageThreeState extends State<PageThree> {
         });
   }
 
+  String pastedStrength;
+
   _inputCheckPass() {
     return Container(
       margin: EdgeInsets.only(top: 8.0, right: 8.0),
@@ -84,7 +93,6 @@ class PageThreeState extends State<PageThree> {
               setState(() {
                 userCheckPass = value;
               });
-              // int newValue = int.parse(value);
               print(_checkPass());
               _checkStrength(_checkPass());
             },
@@ -102,6 +110,10 @@ class PageThreeState extends State<PageThree> {
         ],
       ),
     );
+  }
+
+  void copy(itm) {
+    Clipboard.setData(new ClipboardData(text: itm));
   }
 
   int _checkPass() {
@@ -123,14 +135,14 @@ class PageThreeState extends State<PageThree> {
       }
     }
 
-    String words = 'Words found: ';
+    // String words = 'Words found: ';
     for (var i in allWords) {
       if (userCheckPass.toLowerCase().contains(i.toLowerCase())) {
         strengthScore -= 10;
-        words += ", " + i + " ";
+        // words += ", " + i + " ";
       }
     }
-    debugPrint(words);
+    // debugPrint(words);
 
     // if (len <= 13 && RegExp(r'^[a-z]+$').hasMatch(userCheckPass)) {
     //   strengthScore = 8;
@@ -148,17 +160,13 @@ class PageThreeState extends State<PageThree> {
       chars.add(userCheckPass[i]);
       // print(chars);
 
-      // if (len > 5 && len <= 7) {
-      //   strengthScore += 1;
-      // } else if (len > 7 && len <= 10) {
-      //   strengthScore += 2;
-      // } else if (len > 10 && len <= 13) {
-      //   strengthScore += 3;
-      // } else if (len > 13 && len <= 15) {
-      //   strengthScore += 4;
-      // } else if (len > 15) {
-      //   strengthScore += 5;
-      // }
+      if (len > 5 && len <= 7) {
+        strengthScore += 1;
+      } else if (len > 7 && len <= 13) {
+        strengthScore += 2;
+      } else if (len > 13) {
+        strengthScore += 3;
+      }
       strengthScore += 2;
 
       if (userCheckPass[i].contains(new RegExp(r'^[0-9]'))) {
@@ -206,7 +214,7 @@ class PageThreeState extends State<PageThree> {
   _generatePass() {
     //generate uid section
     int range = rand.nextInt(3);
-    String uid = uuid.v4().replaceAll('-', '').substring(0, range + 4);
+    String uid = uuid.v4().replaceAll('-', '').substring(0, range + 3);
     // print(uid);
 
     // generate wordPair
@@ -240,7 +248,6 @@ class PageThreeState extends State<PageThree> {
       ')',
       ".",
       ",",
-      '',
       '-',
       '+',
       '=',
@@ -271,8 +278,13 @@ class PageThreeState extends State<PageThree> {
           ),
           TextField(
             controller: new TextEditingController(text: generatedPass),
-            readOnly: false,
+            readOnly: true,
             decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    icon: Icon(Icons.content_copy),
+                    onPressed: () {
+                      copy(generatedPass);
+                    }),
                 filled: true,
                 fillColor: _searchBarColor,
                 enabledBorder: OutlineInputBorder(
