@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 // ignore: unused_import
 import 'package:gradient_widgets/gradient_widgets.dart';
+import 'package:firebase_admob/firebase_admob.dart';
+
 import '../app.dart';
 import 'EntryPage.dart';
 import 'jsonStorage.dart';
@@ -22,13 +24,47 @@ class PageOne extends StatefulWidget {
   PageOneState createState() => PageOneState();
 }
 
+const String testDevice = '';
+
 class PageOneState extends State<PageOne> {
+  // // ADS
+  // static final MobileAdTargetingInfo targetInfo = new MobileAdTargetingInfo(
+  //   testDevices: <String>[],
+  //   keywords: <String>['Game'],
+  //   nonPersonalizedAds: true,
+  // );
+
+  // BannerAd _bannerAd;
+  // InterstitialAd _interstitialAd;
+
+  // BannerAd createBannerAd() {
+  //   return new BannerAd(
+  //       adUnitId: BannerAd.testAdUnitId,
+  //       size: AdSize.banner,
+  //       targetingInfo: targetInfo,
+  //       listener: (MobileAdEvent event) {
+  //         print("BannerAd: $event");
+  //       });
+  // }
+
   @override
   void initState() {
     _initImages();
     JSONStorage.readJSONStorage();
+    // // AD //
+    // FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+    // _bannerAd = createBannerAd()
+    //   ..load()
+    //   ..show();
+
     super.initState();
   }
+
+  // @override
+  // void dispose() {
+  //   _bannerAd?.dispose();
+  //   super.dispose();
+  // }
 
   Future _initImages() async {
     // >> To get paths you need these 2 lines
